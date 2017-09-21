@@ -1,0 +1,201 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <style name="AppTheme.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+
+    <!--        ACTIVITY _MAIN                           ==========================                                    -->
+
+    <!---->
+    <style name="ThemeOverlay.ActionBar" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
+        <item name="android:textColorPrimary">@android:color/white</item>
+        <item name="colorControlNormal">@android:color/white</item>
+        <item name="colorControlHighlight">#8fff</item>
+        <item name="colorControlActivated">@color/fab_sheet_bg</item>
+    </style>
+
+
+    <!--Toolbar-->
+    <style name="ThemeOverlay.ActionBar.Popup" parent="ThemeOverlay.AppCompat.Light" />
+
+    <style name="MyToolbarStyle" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">?attr/actionBarSize</item>
+        <item name="android:background">?attr/colorPrimary</item>
+        <item name="android:theme">@style/ThemeOverlay.ActionBar</item>
+        <item name="popupTheme">@style/ThemeOverlay.ActionBar.Popup</item>
+        <item name="android:elevation" tools:ignore="NewApi">@dimen/toolbar_elevation</item>
+        <item name="layout_scrollFlags">scroll|enterAlways</item>
+    </style>
+
+
+    <!--style : for rv-->
+    <style name="MyRecyclerViewStyle" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:paddingTop">@dimen/recycler_spacing</item>
+        <item name="android:paddingLeft">@dimen/recycler_spacing</item>
+        <item name="android:paddingRight">@dimen/recycler_spacing</item>
+        <item name="android:paddingBottom">@dimen/fab_list_spacing</item>
+        <item name="android:clipToPadding">false</item>
+    </style>
+
+    <!--Fab-->
+    <!--Chang background by programmatically, see mainActivity,setUpFab-->
+    <style name="MyFabStyle" parent="">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">@dimen/fab_spacing</item>
+        <item name="android:layout_marginBottom">@dimen/fab_spacing</item>
+        <item name="android:layout_marginLeft">@dimen/fab_spacing</item>
+        <item name="android:layout_marginRight">@dimen/fab_spacing</item>
+        <item name="android:elevation" tools:ignore="NewApi">@dimen/fab_elevation</item>
+        <item name="android:src">@drawable/ic_add_grey600_24dp</item>
+        <item name="fabSize">normal</item>
+        <item name="borderWidth">0dp</item>
+        <item name="android:layout_alignParentBottom">true</item>
+        <item name="android:layout_alignParentEnd" tools:ignore="NewApi">true</item>
+        <item name="android:layout_alignParentRight">true</item>
+    </style>
+
+
+    <!--cardview-->
+    <style name="MyCardViewStyle" parent="">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">@dimen/sheet_spacing</item>
+        <item name="android:layout_marginBottom">@dimen/sheet_spacing</item>
+        <item name="android:layout_marginLeft">@dimen/sheet_spacing</item>
+        <item name="android:layout_marginRight">@dimen/sheet_spacing</item>
+        <item name="cardBackgroundColor">#fff</item>
+        <item name="cardElevation">0dp</item>
+        <item name="cardMaxElevation">0dp</item>
+        <item name="contentPadding">-3dp</item>
+    </style>
+
+
+    <!--card view sheet : Text Item-->
+    <!--Favorite-->
+    <!--Create New One-->
+    <style name="MyTextAppearenceStyle" parent="">
+        <item name="android:layout_width">@dimen/sheet_width</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:padding">@dimen/sheet_item_spacing</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
+        <item name="android:clickable">true</item>
+        <item name="android:textSize">@dimen/sheet_item_textsize</item>
+        <item name="android:textColor">#000</item>
+        <item name="android:drawablePadding">@dimen/sheet_item_image_spacing</item>
+    </style>
+
+
+    <!--        CREATE NOTE                           ==========================                                    -->
+
+
+    <!--Note Title Button-->
+    <style name="MyNoteTitle">
+        <item name="android:background">@drawable/ic_action_save_btn</item>
+        <item name="android:gravity">left|center</item>
+    </style>
+
+    <!--Toggle-->
+
+    <style name="MyNoteToggle">
+
+        <item name="android:layout_alignParentRight">true</item>
+        <item name="android:layout_centerVertical">true</item>
+        <item name="android:background">@drawable/checked</item>
+        <item name="android:focusable">false</item>
+        <item name="android:focusableInTouchMode">false</item>
+        <item name="android:textOff">""</item>
+        <item name="android:textOn">""</item>
+
+    </style>
+
+    <!--EditText Title-->
+    <style name="MyEditText">
+        <item name="android:background">@null</item>
+        <item name="android:paddingEnd" tools:ignore="NewApi">10dp</item>
+        <item name="android:paddingLeft">10dp</item>
+        <item name="android:paddingStart" tools:ignore="NewApi">10dp</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:textColor">#635f5f</item>
+        <item name="android:textColorHint">#a9a4a4</item>
+        <item name="android:gravity">left</item>
+
+    </style>
+
+    <!--Date-->
+    <style name="MyDateText">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:gravity">center</item>
+
+    </style>
+
+    <!--bottom sheet linear layout-->
+
+    <style name="MyBottomLinear">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_alignParentBottom">true</item>
+        <item name="android:background">@color/create_linear_edit_bottom</item>
+        <item name="android:orientation">horizontal</item>
+
+    </style>
+
+
+    <!--ImageView for bottom layout-->
+    <style name="MyImageViewSheet">
+        <item name="android:layout_width">28dp</item>
+        <item name="android:layout_height">28dp</item>
+        <item name="android:layout_gravity">center</item>
+    </style>
+
+    <!--RESET btn-->
+    <style name="MyResetBtn">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:textColor">#FFFFFF</item>
+        <item name="android:text">@string/create_note_reset_btn</item>
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:layout_alignParentRight">true</item>
+        <item name="android:layout_alignParentEnd" tools:ignore="NewApi">true</item>
+
+    </style>
+
+    <!--Custom row card view-->
+    <style name="MyCustomRowCardView">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_margin">@dimen/cardview_margin</item>
+        <item name="android:foreground">?selectableItemBackground</item>
+        <item name="android:clickable">true</item>
+        <item name="contentPadding">@dimen/cardview_content_padding</item>
+        <item name="cardBackgroundColor">@color/card_view_background_card</item>
+        <item name="cardCornerRadius">@dimen/card_corner_radius</item>
+    </style>
+
+    <!--custom row Title and Content-->
+    <style name="MyCustomText">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+
+</resources>

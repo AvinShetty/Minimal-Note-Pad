@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="redfoxclassic.hehe.ui.activity.MainActivity">
+
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/AppTheme.AppBarOverlay">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:popupTheme="@style/AppTheme.PopupOverlay" />
+
+    </android.support.design.widget.AppBarLayout>
+
+
+    <include layout="@layout/content_main" />
+
+
+    <!--Use of Nested ScrollView ,elements shows below app bar -->
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <redfoxclassic.hehe.Fab
+            android:id="@+id/fab"
+            style="@style/MyFabStyle"
+            android:layout_marginBottom="20dp"
+            android:layout_marginEnd="5dp"
+            android:layout_marginRight="5dp" />
+
+        <com.gordonwong.materialsheetfab.DimOverlayFrameLayout
+            android:id="@+id/overlay"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/overlay_dim" />
+
+        <io.codetail.widget.RevealLinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="end|bottom"
+            android:orientation="vertical">
+
+            <android.support.v7.widget.CardView
+                android:id="@+id/main_cardView"
+                style="@style/MyCardViewStyle">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <!-- Favorite -->
+                    <TextView
+                        android:id="@+id/fab_sheet_item_favorite"
+                        style="@style/MyTextAppearenceStyle"
+                        android:drawableLeft="@drawable/ic_favorite_black_24dp"
+                        android:drawableStart="@drawable/ic_favorite_black_24dp"
+                        android:text="@string/go_to_favorites" />
+
+
+                    <!-- Create Note -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@color/fab_sheet_bg">
+
+                        <TextView
+                            android:id="@+id/fab_sheet_item_create_note"
+                            style="@style/MyTextAppearenceStyle"
+                            android:drawableLeft="@drawable/ic_create_grey600_24dp"
+                            android:drawableStart="@drawable/ic_create_grey600_24dp"
+                            android:text="@string/create_note" />
+                    </LinearLayout>
+                </LinearLayout>
+
+            </android.support.v7.widget.CardView>
+        </io.codetail.widget.RevealLinearLayout>
+    </RelativeLayout>
+
+</android.support.design.widget.CoordinatorLayout>
+

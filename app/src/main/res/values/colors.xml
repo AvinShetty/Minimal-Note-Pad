@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#00BCD4</color>
+    <color name="colorPrimaryDark">#0097A7</color>
+    <color name="colorAccent">#E91E63</color>
+
+    <color name="theme_primary">#00BCD4</color>
+    <color name="theme_primary_dark2">#006064</color>
+
+
+    <color name="background_card">#fff</color>
+
+    <color name="overlay_dim">@android:color/transparent</color>
+
+
+    <!--fab sheet bg-->
+    <color name="fab_sheet_bg">#FFEB3B</color>
+
+
+    <color name="createToolBarBarPrimary">#FFFFFF</color>
+    <color name="createStatusBarPrimary">#E0E0E0</color>
+
+    <color name="createStatusBarSecondary">#90A4AE</color>
+    <color name="createToolBarBarSecondary">#546E7A</color>
+
+
+    <!--bottom linear layout create note -->
+    <color name="create_linear_edit_bottom">#607D8B</color>
+
+    <color name="create_linear_default_bottom">#E91E63</color>
+
+    <!--date text-->
+    <color name="create_date_default">#FFFFFF</color>
+    <color name="create_date_edit">#8e8d83</color>
+
+
+    <!--Custom ROW -->
+    <color name="card_view_background_card">#fff</color>
+
+    <!--custom row title color-->
+    <color name="custom_row_title_color">#37474F</color>
+
+    <!--custom row Content color-->
+    <color name="custom_row_content_color">#90A4AE</color>
+
+    <!--custom row date color-->
+    <color name="custom_row_date_color">#d81b60</color>
+
+
+    <!--update Note -->
+
+    <!--toolbar color-->
+    <color name="update_note_toolbar_color">#09995d</color>
+
+    <color name="update_note_fab_color">#09995d</color>
+
+
+</resources>

@@ -1,0 +1,34 @@
+<resources>
+    <dimen name="fab_margin">16dp</dimen>
+
+    <!--toolbar elevation-->
+    <dimen name="toolbar_elevation">4dp</dimen>
+
+
+    <!--recyclerview -->
+    <dimen name="recycler_spacing">4dp</dimen>
+    <dimen name="fab_list_spacing">88dp</dimen>
+
+
+    <!--Fab-->
+    <dimen name="fab_spacing">0dp</dimen>
+    <dimen name="fab_elevation">4dp</dimen>
+
+
+    <!--reveal sheet : cardView : + textAppearence inside dimension-->
+    <dimen name="sheet_width">210dp</dimen>
+    <dimen name="sheet_spacing">10dp</dimen>
+    <dimen name="sheet_item_spacing">16dp</dimen>
+    <dimen name="sheet_item_image_spacing">24dp</dimen>
+    <dimen name="sheet_item_textsize">16sp</dimen>
+
+
+    <!--CardView Custom Row-->
+    <dimen name="cardview_margin">4dp</dimen>
+    <dimen name="cardview_content_padding">16dp</dimen>
+    <dimen name="card_corner_radius">2dp</dimen>
+    <dimen name="note_textsize">14sp</dimen>
+    <dimen name="note_title_textsize">24sp</dimen>
+
+
+</resources>
