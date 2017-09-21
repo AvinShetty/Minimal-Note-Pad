@@ -15,6 +15,7 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.transition.Slide;
 import android.util.Log;
@@ -80,7 +81,9 @@ public class MainActivity extends AppCompatActivity {
 
     private static int notifyValueAdd = 0;
     private static int notifyValueUpdate = 0;
-    private Fab fab;
+
+
+    private SearchView searchView;
 
 
     @Override
@@ -111,9 +114,6 @@ public class MainActivity extends AppCompatActivity {
 
         loadDataAll();
         numberOfRecords();
-
-
-
 
 
     }
@@ -206,6 +206,21 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
+        //this i for searchView widget, a bit different
+        MenuItem menuItem = menu.findItem(R.id.action_search);
+        searchView = (SearchView) menuItem.getActionView();
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                getSearchQuery(newText);
+                return false;
+            }
+        });
         return true;
     }
 
@@ -217,7 +232,11 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "NOT YET IMPLEMENTED", Toast.LENGTH_SHORT).show();
             return true;
         }
+       /* if (id == R.id.action_search) {
 
+
+        }
+*/
         return super.onOptionsItemSelected(item);
     }
 
@@ -241,7 +260,7 @@ public class MainActivity extends AppCompatActivity {
     private void setupFab() {
 
         Log.e(TAG, "setupFab()");
-        fab = (Fab) findViewById(R.id.fab);
+        Fab fab = (Fab) findViewById(R.id.fab);
 
         //Life Saver
         fab.getBackground().setColorFilter(ContextCompat.getColor(this, R.color.fab_sheet_bg), PorterDuff.Mode.SRC_IN);
@@ -449,30 +468,41 @@ public class MainActivity extends AppCompatActivity {
         dbManager.closeDataBase();
         loadDataAll();
     }
-    /*
-      @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-        super.onCreateContextMenu(menu, v, menuInfo);
-        menu.setHeaderIcon(R.mipmap.ic_launcher);
-        menu.setHeaderTitle("Select The Action");
-        menu.add(0, v.getId(), 0, "Call");//groupId, itemId, order, title
-        menu.add(0, v.getId(), 0, "SMS");
-    }
 
-    @Override
-    public boolean onContextItemSelected(MenuItem item) {
-        if (item.getTitle() == "Call") {
-            Toast.makeText(getApplicationContext(), "calling code", Toast.LENGTH_LONG).show();
-        } else if (item.getTitle() == "SMS") {
-            Toast.makeText(getApplicationContext(), "sending sms code", Toast.LENGTH_LONG).show();
-        } else {
-            return false;
+    private void getSearchQuery(String query) {
+        Log.e(TAG, "query : " + query);
+
+        DBManager dbManager = DBManager.getInstance(MainActivity.this);
+        dbManager.openDataBase();
+
+        noteModelList = dbManager.getAllNoteList();
+
+        if (noteModelList != null) {
+
+            List<NoteModel> filterNoteModelList = new ArrayList<>();
+
+            for (int i = 0; i < noteModelList.size(); i++) {
+
+                String resultLower = noteModelList.get(i).getTitle().toLowerCase();
+                String resultUpper = noteModelList.get(i).getTitle().toUpperCase();
+
+
+                if (resultLower.contains(query) | resultUpper.contains(query)) {
+
+                    filterNoteModelList.add(noteModelList.get(i));
+
+                }
+
+            }
+            noteAdapter = new NoteAdapter(filterNoteModelList, MainActivity.this);
+            recyclerView.setAdapter(noteAdapter);
+            noteAdapter.notifyDataSetChanged();
+
+            dbManager.closeDataBase();
+
         }
-        return true;
+
     }
-
-
-     */
 
 
 }

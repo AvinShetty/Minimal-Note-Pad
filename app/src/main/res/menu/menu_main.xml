@@ -4,7 +4,16 @@
     tools:context="redfoxclassic.hehe.ui.activity.MainActivity">
     <item
         android:id="@+id/action_settings"
-        android:orderInCategory="100"
+        android:orderInCategory="200"
         android:title="@string/action_settings"
         app:showAsAction="never" />
+
+
+    <item
+        android:id="@+id/action_search"
+        android:icon="@android:drawable/ic_menu_search"
+        android:orderInCategory="100"
+        android:title="SEARCH"
+        app:actionViewClass="android.support.v7.widget.SearchView"
+        app:showAsAction="always" />
 </menu>
