@@ -155,6 +155,8 @@ public class MainActivity extends AppCompatActivity {
             notifyValueUpdate = 0;
         }
 
+
+
     }
 
     public static void notifySnackbarAdd(int value) {
@@ -209,6 +211,9 @@ public class MainActivity extends AppCompatActivity {
         //this i for searchView widget, a bit different
         MenuItem menuItem = menu.findItem(R.id.action_search);
         searchView = (SearchView) menuItem.getActionView();
+
+        searchView.setBackgroundColor(ContextCompat.getColor(MainActivity.this,R.color.toolbar_search));
+
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -217,10 +222,13 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public boolean onQueryTextChange(String newText) {
+                //  toolbar.setBackgroundColor(ContextCompat.getColor(this, R.color.toolbar_search));
                 getSearchQuery(newText);
                 return false;
             }
         });
+
+        // searchView.isActivated()
         return true;
     }
 
@@ -386,9 +394,15 @@ public class MainActivity extends AppCompatActivity {
         if (materialSheetFab.isSheetVisible()) {
             materialSheetFab.hideSheet();
 
+        }
+        if (!searchView.isIconified()) {
+            System.out.println("--------------------________________---------------");
+            searchView.onActionViewCollapsed();
+            loadDataAll();
         } else {
             super.onBackPressed();
         }
+
     }
 
 
@@ -475,34 +489,18 @@ public class MainActivity extends AppCompatActivity {
         DBManager dbManager = DBManager.getInstance(MainActivity.this);
         dbManager.openDataBase();
 
-        noteModelList = dbManager.getAllNoteList();
+        noteModelList = dbManager.experiment(query);
 
-        if (noteModelList != null) {
+        noteAdapter = new NoteAdapter(noteModelList, MainActivity.this);
+        recyclerView.setAdapter(noteAdapter);
+        noteAdapter.notifyDataSetChanged();
 
-            List<NoteModel> filterNoteModelList = new ArrayList<>();
+        System.out.println("count");
+        dbManager.closeDataBase();
 
-            for (int i = 0; i < noteModelList.size(); i++) {
+        //Now the problem is search is on ,and on backpress off , and load data
 
-                String resultLower = noteModelList.get(i).getTitle().toLowerCase();
-                String resultUpper = noteModelList.get(i).getTitle().toUpperCase();
-
-
-                if (resultLower.contains(query) | resultUpper.contains(query)) {
-
-                    filterNoteModelList.add(noteModelList.get(i));
-
-                }
-
-            }
-            noteAdapter = new NoteAdapter(filterNoteModelList, MainActivity.this);
-            recyclerView.setAdapter(noteAdapter);
-            noteAdapter.notifyDataSetChanged();
-
-            dbManager.closeDataBase();
-
-        }
 
     }
-
 
 }

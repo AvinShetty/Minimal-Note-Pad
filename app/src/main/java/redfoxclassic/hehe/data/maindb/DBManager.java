@@ -140,28 +140,54 @@ public class DBManager {
     public List<NoteModel> getAllNoteList() {
         Log.w(TAG, "getAllNoteList()");
 
-        Cursor cursor = sqLiteDatabase.rawQuery(MainDBSchema.DB_SELECT_ALL, null);
+        //alternative
+      /*  String[] columns = {
+                MainDBSchema.DATABASE_TITLE_NAME,
+                MainDBSchema.DATABASE_CONTENT_NAME,
+                MainDBSchema.DATABASE_DATE,
+                MainDBSchema.DATABASE_ROW_ID,
+        };
+        // sorting orders
+        String sortOrder =
+                MainDBSchema.DATABASE_TITLE_NAME + " ASC";
 
-        if (cursor.moveToFirst()) {
-            do {
 
-                NoteModel noteModel = new NoteModel();
+        Cursor cursor2 = sqLiteDatabase.query(MainDBSchema.DATABASE_TABLE_NAME, //Table to query
+                columns,    //columns to return
+                null,        //columns for the WHERE clause
+                null,        //The values for the WHERE clause
+                null,       //group the rows
+                null,       //filter by row groups
+                sortOrder); //The sort order*/
 
-                noteModel.setId(cursor.getInt(cursor.getColumnIndex(MainDBSchema.DATABASE_ROW_ID)));
-                noteModel.setTitle(cursor.getString(cursor.getColumnIndex(MainDBSchema.DATABASE_TITLE_NAME)));
-                noteModel.setContent(cursor.getString(cursor.getColumnIndex(MainDBSchema.DATABASE_CONTENT_NAME)));
-                noteModel.setDate(cursor.getString(cursor.getColumnIndex(MainDBSchema.DATABASE_DATE)));
+        //Wholy molly, advantage of using date is to sort + as well as last updated keeps in top
+
+        Cursor cursor = sqLiteDatabase.rawQuery(MainDBSchema.DB_SELECT_ALL + " order by " + MainDBSchema.DATABASE_DATE + " DESC;", null);
+
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                do {
+
+                    NoteModel noteModel = new NoteModel();
+
+                    noteModel.setId(cursor.getInt(cursor.getColumnIndex(MainDBSchema.DATABASE_ROW_ID)));
+                    noteModel.setTitle(cursor.getString(cursor.getColumnIndex(MainDBSchema.DATABASE_TITLE_NAME)));
+                    noteModel.setContent(cursor.getString(cursor.getColumnIndex(MainDBSchema.DATABASE_CONTENT_NAME)));
+                    noteModel.setDate(cursor.getString(cursor.getColumnIndex(MainDBSchema.DATABASE_DATE)));
 
 
-                noteModelList.add(noteModel);
-                Log.i(TAG, " -- : " + noteModel.toString());
+                    noteModelList.add(noteModel);
+                    Log.i(TAG, " -- : " + noteModel.toString());
 
-            } while (cursor.moveToNext());
+                } while (cursor.moveToNext());
 
+            }
+
+            cursor.close();
+            return noteModelList;
+        } else {
+            return noteModelList;
         }
-
-        cursor.close();
-        return noteModelList;
 
     }
 //-------------------------------------------------------------------------------------------------------------------------
@@ -174,5 +200,38 @@ public class DBManager {
     }
 //-------------------------------------------------------------------------------------------------------------------------
 
+    public List<NoteModel> experiment(String searchKey) {
+
+        Cursor cursor = sqLiteDatabase.rawQuery(MainDBSchema.DB_SELECT_ALL +
+                " WHERE " + MainDBSchema.DATABASE_TITLE_NAME + "  LIKE  '%" + searchKey + "%' ", null);
+
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                do {
+
+                    NoteModel noteModel = new NoteModel();
+
+                    noteModel.setId(cursor.getInt(cursor.getColumnIndex(MainDBSchema.DATABASE_ROW_ID)));
+                    noteModel.setTitle(cursor.getString(cursor.getColumnIndex(MainDBSchema.DATABASE_TITLE_NAME)));
+                    noteModel.setContent(cursor.getString(cursor.getColumnIndex(MainDBSchema.DATABASE_CONTENT_NAME)));
+                    noteModel.setDate(cursor.getString(cursor.getColumnIndex(MainDBSchema.DATABASE_DATE)));
+
+
+                    noteModelList.add(noteModel);
+                    Log.i(TAG, " -- : " + noteModel.toString());
+
+                } while (cursor.moveToNext());
+
+            }
+
+            cursor.close();
+
+
+            return noteModelList;
+
+        }
+
+        return null;
+    }
 
 }
