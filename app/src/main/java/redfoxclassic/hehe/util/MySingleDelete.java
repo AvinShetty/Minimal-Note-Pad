@@ -47,7 +47,7 @@ public class MySingleDelete {
     private static void deleteOperation(final Context context, NoteAdapter.MyViewHolder myViewHolder,
                                         List<NoteModel> wishModelList, View view, DialogInterface dialogInterface) {
 
-    /*    DBManagerFab dbManager = new DBManagerFab(context);
+    /*    DBManagerFav dbManager = new DBManagerFav(context);
         dbManager.openDataBase();
 
         NoteModel wishModel = new NoteModel();

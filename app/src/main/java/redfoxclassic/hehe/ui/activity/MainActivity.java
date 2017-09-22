@@ -42,6 +42,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import redfoxclassic.hehe.Fab;
 import redfoxclassic.hehe.R;
+import redfoxclassic.hehe.data.favdb.DBManagerFav;
 import redfoxclassic.hehe.data.maindb.DBManager;
 import redfoxclassic.hehe.model.NoteModel;
 import redfoxclassic.hehe.ui.adapters.NoteAdapter;
@@ -130,7 +131,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onNewIntent(Intent intent) {
-        Log.e(TAG, "onNewIntent()");
+        //  Log.e(TAG, "onNewIntent()");
         super.onNewIntent(intent);
         setIntent(intent);
 
@@ -143,7 +144,7 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         MainActivity.this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
-        Log.e(TAG, "onResume()");
+        // Log.e(TAG, "onResume()");
         loadDataAll();
 
         if (notifyValueAdd == 1) {
@@ -173,7 +174,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void loadDataAll() {
-        Log.e(TAG, "loadDataAll()");
+        // Log.e(TAG, "loadDataAll()");
         moreGenericLoadData();
 
     }
@@ -194,7 +195,7 @@ public class MainActivity extends AppCompatActivity {
         } else {
             recyclerView.setVisibility(View.VISIBLE);
             imvEmpty.setVisibility(View.GONE);
-            Log.e(TAG, " size : " + noteModelList.size());
+            // Log.e(TAG, " size : " + noteModelList.size());
             noteAdapter = new NoteAdapter(noteModelList, MainActivity.this);
             recyclerView.setAdapter(noteAdapter);
             noteAdapter.notifyDataSetChanged();
@@ -248,10 +249,11 @@ public class MainActivity extends AppCompatActivity {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.fab_sheet_item_favorite:
-                Log.e(TAG, "item_Fav clicked)");
+                // Log.e(TAG, "item_Fav clicked)");
+                transitionToActivity2();
                 break;
             case R.id.fab_sheet_item_create_note:
-                Log.e(TAG, "item_create clicked)");
+                //Log.e(TAG, "item_create clicked)");
 
                 transitionToActivity();
                 break;
@@ -261,7 +263,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void setupFab() {
 
-        Log.e(TAG, "setupFab()");
+        // Log.e(TAG, "setupFab()");
         Fab fab = (Fab) findViewById(R.id.fab);
 
         //Life Saver
@@ -318,7 +320,7 @@ public class MainActivity extends AppCompatActivity {
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private void setupWindowAnimations() {
-        Log.e(TAG, "setupWindowAnimations()");
+        // Log.e(TAG, "setupWindowAnimations()");
         Slide slideTransition = new Slide();
         slideTransition.setSlideEdge(Gravity.START);
         slideTransition.setDuration(800);
@@ -333,6 +335,13 @@ public class MainActivity extends AppCompatActivity {
         ActivityOptionsCompat transitionActivityOptions = ActivityOptionsCompat.makeSceneTransitionAnimation(MainActivity.this);
         startActivity(i, transitionActivityOptions.toBundle());
     }
+
+    @SuppressWarnings("unchecked")
+    private void transitionToActivity2() {
+        Intent i = new Intent(MainActivity.this, NoteFavoriteActivity.class);
+        ActivityOptionsCompat transitionActivityOptions = ActivityOptionsCompat.makeSceneTransitionAnimation(MainActivity.this);
+        startActivity(i, transitionActivityOptions.toBundle());
+    }
     //----------------------------------------------------------------------------------------------------------
 
 
@@ -342,7 +351,7 @@ public class MainActivity extends AppCompatActivity {
                 new MyRecyclerTouchListener.ClickListenerTouch() {
                     @Override
                     public void onClickTouch(View view, int position) {
-                        Log.e(TAG, "onItemClick at :" + position);
+                        // Log.e(TAG, "onItemClick at :" + position);
 
                         adapterClickedPosition = position;
 
@@ -353,7 +362,7 @@ public class MainActivity extends AppCompatActivity {
                         bundle.putString(MyConstants.WISH_CONTENT, noteModel.getContent());
                         bundle.putInt(MyConstants.WISH_POSITION, noteModelList.get(position).getId()); //return 3
                         bundle.putString(MyConstants.WISH_DATE, noteModel.getDate());
-                        Log.e(TAG, " bundle entered " + bundle.toString());
+                        //Log.e(TAG, " bundle entered " + bundle.toString());
 
                         startActivity(new Intent(MainActivity.this, NoteUpdateActivity.class).putExtras(bundle));
 
@@ -361,7 +370,7 @@ public class MainActivity extends AppCompatActivity {
 
                     @Override
                     public void onLongClickTouch(View view, int position) {
-                        Log.e(TAG, "onItem LONG Click at :" + position);
+                        // Log.e(TAG, "onItem LONG Click at :" + position);
 
                         registerForContextMenu(view);
                         adapterClickedPosition = position;
@@ -377,7 +386,7 @@ public class MainActivity extends AppCompatActivity {
 
         DBManager dbManager = DBManager.getInstance(MainActivity.this);
         dbManager.openDataBase();
-        Log.i(TAG, " Total Number of Records Available " + dbManager.getTotalNumberOfRecords());
+        //Log.i(TAG, " Total Number of Records Available " + dbManager.getTotalNumberOfRecords());
         dbManager.closeDataBase();
 
     }
@@ -426,6 +435,30 @@ public class MainActivity extends AppCompatActivity {
 
                 break;
             case R.id.context_addToFav:
+
+                //Log.e(TAG, "fav context clicked at : " + adapterClickedPosition);
+
+                DBManagerFav dbManagerFav = DBManagerFav.getInstance(MainActivity.this);
+                dbManagerFav.openDataBase();
+
+
+                NoteModel noteModel = new NoteModel();
+                noteModel.setTitle(noteModelList.get(adapterClickedPosition).getTitle());
+                noteModel.setContent(noteModelList.get(adapterClickedPosition).getContent());
+                noteModel.setDate(noteModelList.get(adapterClickedPosition).getDate());
+                noteModel.setId(noteModelList.get(adapterClickedPosition).getId());
+
+                boolean status = dbManagerFav.insertNoteFav(noteModel);
+                if (status == true) {
+
+                    // Log.e(TAG, "Add to Favorites");
+                    Toast.makeText(MainActivity.this, "Added to Favorites", Toast.LENGTH_SHORT).show();
+                } else {
+                    //  Log.e(TAG, "Failed to add to Favorites");
+                }
+
+                dbManagerFav.closeDataBase();
+
                 break;
             default:
 
@@ -481,7 +514,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void getSearchQuery(String query) {
-        Log.e(TAG, "query : " + query);
+        // Log.e(TAG, "query : " + query);
 
         DBManager dbManager = DBManager.getInstance(MainActivity.this);
         dbManager.openDataBase();
@@ -492,7 +525,7 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setAdapter(noteAdapter);
         noteAdapter.notifyDataSetChanged();
 
-        System.out.println("count");
+        // System.out.println("count");
         dbManager.closeDataBase();
 
 
@@ -502,8 +535,6 @@ public class MainActivity extends AppCompatActivity {
         searchView.setOnCloseListener(new SearchView.OnCloseListener() {
             @Override
             public boolean onClose() {
-               /* Animation slideRight = AnimationUtils.loadAnimation(MainActivity.this, R.anim.slide_right2);
-                toolbar.setAnimation(slideRight);*/
                 toolbar.setBackgroundColor(ContextCompat.getColor(MainActivity.this, R.color.theme_primary));
                 return false;
             }

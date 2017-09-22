@@ -7,7 +7,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -45,10 +44,6 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.MyViewHolder> 
         CardView noteRowCardView;
         @BindView(R.id.note_row_line)
         TextView noteRowLine;
-        @BindView(R.id.note_row_checkbox)
-        CheckBox checkBox;
-        /*@BindView(R.id.note_row_relative)
-        RelativeLayout noteRowRelative;*/
 
 
         public MyViewHolder(View itemView) {
@@ -83,8 +78,6 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.MyViewHolder> 
 
     @Override
     public void onBindViewHolder(final MyViewHolder myViewHolder, final int position) {
-       // Log.d(TAG, "onBindViewHolder()");
-
         NoteModel noteModel = noteModelList.get(position);
 
         myViewHolder.noteRowTitle.setText(noteModel.getTitle());
@@ -106,8 +99,6 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.MyViewHolder> 
         notifyItemRangeChanged(position, noteModelList.size());
         notifyDataSetChanged();
     }
-
-
 
 
 }

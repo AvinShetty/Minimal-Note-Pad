@@ -17,6 +17,11 @@
     <string name="note_update_msg">Note Updated</string>
     <string name="note_add_msg">Note Saved</string>
     <string name="title_activity_note_favorite">NoteFavoriteActivity</string>
+    <string name="context_menu_addToFav">Add to Favourite</string>
+    <string name="context_menu_shareYourNote">Share Your Note</string>
+    <string name="context_menu_delete">Delete</string>
+    <string name="menu_share">Share</string>
+    <string name="menu_main_search">SEARCH</string>
 
 
 </resources>

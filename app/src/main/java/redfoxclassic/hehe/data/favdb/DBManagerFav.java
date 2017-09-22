@@ -13,10 +13,10 @@ import java.util.List;
 import redfoxclassic.hehe.model.NoteModel;
 
 
-public class DBManagerFab {
+public class DBManagerFav {
 
-    private final static String TAG = DBManagerFab.class.getSimpleName();
-    private static DBManagerFab dbManagerFab;
+    private final static String TAG = DBManagerFav.class.getSimpleName();
+    private static DBManagerFav dbManagerFav;
 
     private Context context;
     private DBHelperFav dbHelperFav;
@@ -24,23 +24,23 @@ public class DBManagerFab {
     private List<NoteModel> noteModelList = new ArrayList<>();
 
 
-    private DBManagerFab(Context context) {
+    private DBManagerFav(Context context) {
         this.context = context;
         this.dbHelperFav = new DBHelperFav(context);
     }
 
 
-    public static DBManagerFab getInstance(Context context) {
+    public static DBManagerFav getInstance(Context context) {
 
-        if (dbManagerFab == null) {
-            return new DBManagerFab(context);
+        if (dbManagerFav == null) {
+            return new DBManagerFav(context);
 
         }
-        return dbManagerFab;
+        return dbManagerFav;
     }
 
 
-    public DBManagerFab openDataBase() {
+    public DBManagerFav openDataBase() {
         Log.w(TAG, "openDataBase()");
 
         try {
@@ -69,11 +69,11 @@ public class DBManagerFab {
                 " , " + noteModel.getId() + " , " + noteModel.getDate());
         try {
             ContentValues contentValues = new ContentValues();
-            contentValues.put(FavDBSchema.DATABASE_TITLE_NAME, noteModel.getTitle());
-            contentValues.put(FavDBSchema.DATABASE_CONTENT_NAME, noteModel.getContent());
-            contentValues.put(FavDBSchema.DATABASE_DATE, noteModel.getDate());
+            contentValues.put(FavDBSchema.DATABASE_TITLE_NAME2, noteModel.getTitle());
+            contentValues.put(FavDBSchema.DATABASE_CONTENT_NAME2, noteModel.getContent());
+            contentValues.put(FavDBSchema.DATABASE_DATE2, noteModel.getDate());
 
-            long rowId = sqLiteDatabase.insert(FavDBSchema.DATABASE_TABLE_NAME, null, contentValues);
+            long rowId = sqLiteDatabase.insert(FavDBSchema.DATABASE_TABLE_NAME2, null, contentValues);
             Log.i(TAG, " return rowId  : " + String.valueOf(rowId));
 
             return true;
@@ -86,17 +86,17 @@ public class DBManagerFab {
     public List<NoteModel> getAllNoteList() {
         Log.w(TAG, "getAllNoteList()");
 
-        Cursor cursor = sqLiteDatabase.rawQuery(FavDBSchema.DB_SELECT_ALL, null);
+        Cursor cursor = sqLiteDatabase.rawQuery(FavDBSchema.DB_SELECT_ALL2 + " order by " + FavDBSchema.DATABASE_DATE2 + " DESC;", null);
 
         if (cursor.moveToFirst()) {
             do {
 
                 NoteModel noteModel = new NoteModel();
 
-                noteModel.setId(cursor.getInt(cursor.getColumnIndex(FavDBSchema.DATABASE_ROW_ID)));
-                noteModel.setTitle(cursor.getString(cursor.getColumnIndex(FavDBSchema.DATABASE_TITLE_NAME)));
-                noteModel.setContent(cursor.getString(cursor.getColumnIndex(FavDBSchema.DATABASE_CONTENT_NAME)));
-                noteModel.setDate(cursor.getString(cursor.getColumnIndex(FavDBSchema.DATABASE_DATE)));
+                noteModel.setId(cursor.getInt(cursor.getColumnIndex(FavDBSchema.DATABASE_ROW_ID2)));
+                noteModel.setTitle(cursor.getString(cursor.getColumnIndex(FavDBSchema.DATABASE_TITLE_NAME2)));
+                noteModel.setContent(cursor.getString(cursor.getColumnIndex(FavDBSchema.DATABASE_CONTENT_NAME2)));
+                noteModel.setDate(cursor.getString(cursor.getColumnIndex(FavDBSchema.DATABASE_DATE2)));
 
 
                 noteModelList.add(noteModel);
@@ -115,7 +115,7 @@ public class DBManagerFab {
     public int getTotalNumberOfRecords() {
         Log.w(TAG, "getTotalNumberOfRecords()");
 
-        Cursor cursor = sqLiteDatabase.rawQuery(FavDBSchema.DB_SELECT_ALL, null);
+        Cursor cursor = sqLiteDatabase.rawQuery(FavDBSchema.DB_SELECT_ALL2, null);
         return cursor.getCount();
     }
 

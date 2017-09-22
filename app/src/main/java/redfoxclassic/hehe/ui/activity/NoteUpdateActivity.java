@@ -214,7 +214,7 @@ public class NoteUpdateActivity extends AppCompatActivity {
     }
 
     private void updateToDB() {
-        Log.i(TAG, "updateToDB()");
+        Log.e(TAG, "updateToDB()");
 
         DBManager dbManager = DBManager.getInstance(NoteUpdateActivity.this);
 
@@ -238,7 +238,7 @@ public class NoteUpdateActivity extends AppCompatActivity {
             MainActivity.notifySnackbarUpdate(1);
 
         } else {
-            Log.i(TAG, " oops ! Not able to update ");
+            Log.e(TAG, " oops ! Not able to update ");
             Toast.makeText(NoteUpdateActivity.this, "Unable to Update !!", Toast.LENGTH_SHORT).show();
         }
 
@@ -249,7 +249,7 @@ public class NoteUpdateActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        Log.i(TAG, "onStop()");
+        Log.e(TAG, "onStop()");
         NoteUpdateActivity.this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
     }
@@ -257,13 +257,13 @@ public class NoteUpdateActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        Log.i(TAG, "onResume()");
+        Log.e(TAG, "onResume()");
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        Log.i(TAG, "onPause()");
+        Log.e(TAG, "onPause()");
     }
 
 
