@@ -26,6 +26,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -155,6 +157,7 @@ public class MainActivity extends AppCompatActivity {
             notifyValueUpdate = 0;
         }
 
+
     }
 
     public static void notifySnackbarAdd(int value) {
@@ -209,6 +212,11 @@ public class MainActivity extends AppCompatActivity {
         //this i for searchView widget, a bit different
         MenuItem menuItem = menu.findItem(R.id.action_search);
         searchView = (SearchView) menuItem.getActionView();
+
+
+        searchViewCloseBtnListener();
+
+
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -217,10 +225,14 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public boolean onQueryTextChange(String newText) {
+               /* Animation slideLeft = AnimationUtils.loadAnimation(MainActivity.this, R.anim.slide_left2);
+                toolbar.setAnimation(slideLeft);*/
+                toolbar.setBackgroundColor(ContextCompat.getColor(MainActivity.this, R.color.toolbar_search));
                 getSearchQuery(newText);
                 return false;
             }
         });
+
         return true;
     }
 
@@ -232,11 +244,7 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "NOT YET IMPLEMENTED", Toast.LENGTH_SHORT).show();
             return true;
         }
-       /* if (id == R.id.action_search) {
 
-
-        }
-*/
         return super.onOptionsItemSelected(item);
     }
 
@@ -386,9 +394,18 @@ public class MainActivity extends AppCompatActivity {
         if (materialSheetFab.isSheetVisible()) {
             materialSheetFab.hideSheet();
 
+        }
+        if (!searchView.isIconified()) {
+            System.out.println("--------------------________________---------------");
+            searchView.onActionViewCollapsed();
+          /*  Animation slideRight = AnimationUtils.loadAnimation(MainActivity.this, R.anim.slide_right2);
+            toolbar.setAnimation(slideRight);*/
+            toolbar.setBackgroundColor(ContextCompat.getColor(MainActivity.this, R.color.theme_primary));
+            loadDataAll();
         } else {
             super.onBackPressed();
         }
+
     }
 
 
@@ -475,34 +492,29 @@ public class MainActivity extends AppCompatActivity {
         DBManager dbManager = DBManager.getInstance(MainActivity.this);
         dbManager.openDataBase();
 
-        noteModelList = dbManager.getAllNoteList();
+        noteModelList = dbManager.experiment(query);
 
-        if (noteModelList != null) {
+        noteAdapter = new NoteAdapter(noteModelList, MainActivity.this);
+        recyclerView.setAdapter(noteAdapter);
+        noteAdapter.notifyDataSetChanged();
 
-            List<NoteModel> filterNoteModelList = new ArrayList<>();
+        System.out.println("count");
+        dbManager.closeDataBase();
 
-            for (int i = 0; i < noteModelList.size(); i++) {
-
-                String resultLower = noteModelList.get(i).getTitle().toLowerCase();
-                String resultUpper = noteModelList.get(i).getTitle().toUpperCase();
-
-
-                if (resultLower.contains(query) | resultUpper.contains(query)) {
-
-                    filterNoteModelList.add(noteModelList.get(i));
-
-                }
-
-            }
-            noteAdapter = new NoteAdapter(filterNoteModelList, MainActivity.this);
-            recyclerView.setAdapter(noteAdapter);
-            noteAdapter.notifyDataSetChanged();
-
-            dbManager.closeDataBase();
-
-        }
 
     }
 
+    private void searchViewCloseBtnListener() {
+        searchView.setOnCloseListener(new SearchView.OnCloseListener() {
+            @Override
+            public boolean onClose() {
+               /* Animation slideRight = AnimationUtils.loadAnimation(MainActivity.this, R.anim.slide_right2);
+                toolbar.setAnimation(slideRight);*/
+                toolbar.setBackgroundColor(ContextCompat.getColor(MainActivity.this, R.color.theme_primary));
+                return false;
+            }
+        });
+
+    }
 
 }

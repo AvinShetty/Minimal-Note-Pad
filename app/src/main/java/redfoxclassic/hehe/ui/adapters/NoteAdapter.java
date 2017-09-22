@@ -53,7 +53,7 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.MyViewHolder> 
 
         public MyViewHolder(View itemView) {
             super(itemView);
-            Log.d(TAG, "ctor");
+            //Log.d(TAG, "ctor");
             ButterKnife.bind(this, itemView);
         }
 
@@ -62,10 +62,9 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.MyViewHolder> 
 
     @Override
     public MyViewHolder onCreateViewHolder(final ViewGroup parent, int viewType) {
-        Log.d(TAG, "onCreateViewHolder()");
+        //Log.d(TAG, "onCreateViewHolder()");
         final View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.note_custom_row, parent, false);
         final MyViewHolder myViewHolder = new MyViewHolder(v);
-
 
         myViewHolder.noteRowLine.setBackgroundColor(MyColor.getRandomColor(context));
 
@@ -84,7 +83,7 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.MyViewHolder> 
 
     @Override
     public void onBindViewHolder(final MyViewHolder myViewHolder, final int position) {
-        Log.d(TAG, "onBindViewHolder()");
+       // Log.d(TAG, "onBindViewHolder()");
 
         NoteModel noteModel = noteModelList.get(position);
 
@@ -107,6 +106,8 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.MyViewHolder> 
         notifyItemRangeChanged(position, noteModelList.size());
         notifyDataSetChanged();
     }
+
+
 
 
 }
