@@ -16,7 +16,7 @@ public class MyMultiDelete {
     public static void deleteMulti(final Context context, int position,
                                    List<NoteModel> wishModelList, DBManager dbManager) {
 
-        Log.i(TAG, "inside deleteMulti()");
+       // Log.i(TAG, "inside deleteMulti()");
         System.out.println(TAG + " -  " + position);
         NoteModel wishModel = new NoteModel();
         wishModel.setId(wishModelList.get(position).getId());
@@ -36,7 +36,7 @@ public class MyMultiDelete {
             //MySnackBarUtil.showSnackBar((MainActivity) view.getContext(), MyConstants.SNACKBAR_DELETE, "delete");
 
         } else {
-            Log.i(TAG, " oops ! Not able to delete ");
+           // Log.i(TAG, " oops ! Not able to delete ");
             Toast.makeText(context, "Unable to Delete !!", Toast.LENGTH_SHORT).show();
         }
 

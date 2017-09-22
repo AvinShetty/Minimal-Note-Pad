@@ -4,18 +4,15 @@ import android.app.Activity;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.support.design.widget.Snackbar;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
-
-import redfoxclassic.hehe.R;
 
 public class MySnackBarUtil {
 
     private final static String TAG = MySnackBarUtil.class.getSimpleName();
 
     public static void showSnackBar(Activity activity, String message, String whichOne) {
-        Log.e(TAG, "showSnackBar()");
+      //  Log.e(TAG, "showSnackBar()");
         View rootView = activity.getWindow().getDecorView().findViewById(android.R.id.content);
         Snackbar snackbar = Snackbar.make(rootView, message, Snackbar.LENGTH_SHORT);
 

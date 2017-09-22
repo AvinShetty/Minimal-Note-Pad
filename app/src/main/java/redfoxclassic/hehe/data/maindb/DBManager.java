@@ -5,7 +5,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +41,7 @@ public class DBManager {
 //-----------------------------------------------------------------------------------------------------------------------
 
     public DBManager openDataBase() {
-        Log.w(TAG, "openDataBase()");
+      //  Log.w(TAG, "openDataBase()");
 
         try {
 
@@ -56,7 +55,7 @@ public class DBManager {
 
 
     public void closeDataBase() {
-        Log.w(TAG, "closeDataBase()");
+      //  Log.w(TAG, "closeDataBase()");
         try {
 
             dbHelper.close();
@@ -69,8 +68,8 @@ public class DBManager {
 
 
     public boolean insertNote(NoteModel noteModel) {
-        Log.w(TAG, " insertNote() : passed to here , so NoteModel : " + noteModel.getTitle() + "," + noteModel.getContent() +
-                " , " + noteModel.getId() + " , " + noteModel.getDate());
+   /*     Log.w(TAG, " insertNote() : passed to here , so NoteModel : " + noteModel.getTitle() + "," + noteModel.getContent() +
+                " , " + noteModel.getId() + " , " + noteModel.getDate());*/
 
         try {
 
@@ -80,7 +79,7 @@ public class DBManager {
             contentValues.put(MainDBSchema.DATABASE_DATE, noteModel.getDate());
 
             long rowId = sqLiteDatabase.insert(MainDBSchema.DATABASE_TABLE_NAME, null, contentValues);
-            Log.i(TAG, " return rowId  : " + String.valueOf(rowId));
+          //  Log.i(TAG, " return rowId  : " + String.valueOf(rowId));
 
             return true;
         } catch (SQLException e) {
@@ -91,7 +90,7 @@ public class DBManager {
 
     //-----------------------------------------------------------------------------------------------------------------------
     public int deleteNote(int whichOne) {
-        Log.w(TAG, "deleteNote()" + " , " + " whichOne : " + whichOne);
+       // Log.w(TAG, "deleteNote()" + " , " + " whichOne : " + whichOne);
 
         try {
 
@@ -109,10 +108,10 @@ public class DBManager {
     //-----------------------------------------------------------------------------------------------------------------------
 
     public long updateNote(NoteModel noteModel, int whichOne) {
-        Log.w(TAG, " updatedWish() :" +
+       /* Log.w(TAG, " updatedWish() :" +
                 " passed to here , NoteModel : " + noteModel.getTitle()
                 + ",passed ID :" + noteModel.getContent()
-                + " , date : " + noteModel.getDate());
+                + " , date : " + noteModel.getDate());*/
 
         try {
             System.out.println(" --- " + String.valueOf(noteModel.getId()) + " , " + String.valueOf(whichOne));
@@ -127,7 +126,7 @@ public class DBManager {
                     contentValues,
                     MainDBSchema.DATABASE_ROW_ID + " =?", new String[]{String.valueOf(noteModel.getId())});
 
-            Log.i(" update Affected Row : ", String.valueOf(updatedRow));
+           // Log.i(" update Affected Row : ", String.valueOf(updatedRow));
             return updatedRow;
 
         } catch (SQLException e) {
@@ -138,7 +137,7 @@ public class DBManager {
 
     //------------------------------------------------------------------------------------------------------------------------
     public List<NoteModel> getAllNoteList() {
-        Log.w(TAG, "getAllNoteList()");
+      //  Log.w(TAG, "getAllNoteList()");
 
         //alternative
       /*  String[] columns = {
@@ -177,7 +176,7 @@ public class DBManager {
 
 
                     noteModelList.add(noteModel);
-                    Log.i(TAG, " -- : " + noteModel.toString());
+                    //Log.i(TAG, " -- : " + noteModel.toString());
 
                 } while (cursor.moveToNext());
 
@@ -193,7 +192,7 @@ public class DBManager {
 //-------------------------------------------------------------------------------------------------------------------------
 
     public int getTotalNumberOfRecords() {
-        Log.w(TAG, "getTotalNumberOfRecords()");
+       // Log.w(TAG, "getTotalNumberOfRecords()");
 
         Cursor cursor = sqLiteDatabase.rawQuery(MainDBSchema.DB_SELECT_ALL, null);
         return cursor.getCount();
@@ -218,7 +217,7 @@ public class DBManager {
 
 
                     noteModelList.add(noteModel);
-                    Log.i(TAG, " -- : " + noteModel.toString());
+                  //  Log.i(TAG, " -- : " + noteModel.toString());
 
                 } while (cursor.moveToNext());
 

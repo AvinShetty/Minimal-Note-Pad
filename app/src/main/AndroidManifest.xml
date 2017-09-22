@@ -16,7 +16,7 @@
             android:screenOrientation="portrait"
             android:taskAffinity="com.mainActivity"
             android:theme="@style/AppTheme.NoActionBar"
-            android:windowSoftInputMode="stateHidden">
+            android:windowSoftInputMode="stateAlwaysHidden">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -35,11 +35,11 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="adjustResize" />
-        <!-- android:windowSoftInputMode="adjustResize" -->
         <activity
             android:name=".ui.activity.NoteFavoriteActivity"
             android:label="@string/title_activity_note_favorite"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>

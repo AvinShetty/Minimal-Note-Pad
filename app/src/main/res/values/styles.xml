@@ -183,10 +183,8 @@
     <style name="MyCustomRowCardView">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_margin">@dimen/cardview_margin</item>
         <item name="android:foreground">?selectableItemBackground</item>
         <item name="android:clickable">true</item>
-        <item name="contentPadding">@dimen/cardview_content_padding</item>
         <item name="cardBackgroundColor">@color/card_view_background_card</item>
         <item name="cardCornerRadius">@dimen/card_corner_radius</item>
     </style>

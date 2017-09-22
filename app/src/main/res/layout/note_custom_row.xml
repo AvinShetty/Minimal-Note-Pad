@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/note_row_CardView"
     style="@style/MyCustomRowCardView"
-    android:clickable="true">
+    android:layout_margin="4dp"
+    android:clickable="true"
+    app:contentPadding="0dp">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="120dp"
         android:orientation="horizontal"
         android:weightSum="1">
 
@@ -19,7 +22,7 @@
 
             <TextView
                 android:id="@+id/note_row_line"
-                android:layout_width="2dp"
+                android:layout_width="3dp"
                 android:layout_height="match_parent"
                 android:background="#f32" />
 
@@ -28,28 +31,23 @@
 
 
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.1"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
             android:orientation="vertical">
 
             <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <CheckBox
-                    android:id="@+id/note_row_checkbox"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:layout_alignParentRight="true"
-                    android:visibility="gone" />
+                android:layout_marginRight="15dp"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent">
 
 
                 <TextView
                     android:id="@+id/note_row_Title"
                     style="@style/MyCustomText"
+                    android:layout_marginTop="10dp"
                     android:ellipsize="end"
-                    android:text="sv,jdsvndskjv"
+                    android:maxLines="1"
+                    android:text="adsad"
                     android:textColor="@color/custom_row_title_color"
                     android:textSize="16sp"
                     android:textStyle="bold" />
@@ -58,9 +56,9 @@
                     android:id="@+id/note_row_Date"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/note_row_Title"
+                    android:layout_centerInParent="true"
                     android:layout_marginTop="10dp"
-                    android:text="vkhds,nv"
+                    android:text="adsasd"
                     android:textColor="@color/custom_row_date_color"
                     android:textSize="12sp" />
 
@@ -70,8 +68,8 @@
                     android:layout_below="@+id/note_row_Date"
                     android:layout_marginTop="5dp"
                     android:ellipsize="end"
-                    android:maxLines="2"
-                    android:text="skvjnds"
+                    android:maxLines="1"
+                    android:text="asdasdas"
                     android:textColor="@color/custom_row_content_color"
                     android:textSize="14sp" />
 

@@ -24,9 +24,8 @@
 
 
     <!--CardView Custom Row-->
-    <dimen name="cardview_margin">4dp</dimen>
-    <dimen name="cardview_content_padding">16dp</dimen>
-    <dimen name="card_corner_radius">2dp</dimen>
+    <dimen name="cardview_content_padding">0dp</dimen>
+    <dimen name="card_corner_radius">4dp</dimen>
     <dimen name="note_textsize">14sp</dimen>
     <dimen name="note_title_textsize">24sp</dimen>
 

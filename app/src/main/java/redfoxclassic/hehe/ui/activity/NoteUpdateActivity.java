@@ -21,6 +21,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -94,7 +95,7 @@ public class NoteUpdateActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         fabUpdate.getBackground().setColorFilter(ContextCompat.getColor(this, R.color.update_note_fab_color), PorterDuff.Mode.SRC_IN);
-        MainActivity.hideSheetPlease();
+        //MainActivity.hideSheetPlease();
 
         setupToolbar();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -111,7 +112,7 @@ public class NoteUpdateActivity extends AppCompatActivity {
         toggle.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
-                Log.e(TAG, "onTOuch");
+                // Log.e(TAG, "onTOuch");
                 NoteUpdateActivity.this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
                 NoteUpdateActivity.this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
                 return false;
@@ -121,9 +122,10 @@ public class NoteUpdateActivity extends AppCompatActivity {
 
     }
 
+
     @OnClick(R.id.update_note_fab)
     public void onFabUpdate() {
-        Log.e(TAG, "fab update");
+        // Log.e(TAG, "fab update");
 
         toggle.setVisibility(View.VISIBLE);
 
@@ -137,15 +139,15 @@ public class NoteUpdateActivity extends AppCompatActivity {
         updateNoteEtxContent.setEnabled(true);
 
         updateNoteEtxTitle.requestFocus();
-        editTextTouch();
-        editTextTouch2();
+      /*  editTextTouch();
+        editTextTouch2();*/
 
 
     }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private void setUpAnimations() {
-        Log.w(TAG, "setUpAnimations()");
+        // Log.w(TAG, "setUpAnimations()");
         Transition transition = new Explode();
         transition.setDuration(800);
         getWindow().setEnterTransition(transition);
@@ -175,7 +177,6 @@ public class NoteUpdateActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         if (id == R.id.create_share) {
-            Log.w(TAG, "note_update_share btn clicked");
             MyMiscellaneousUtil.shareData(
                     updateNoteEtxTitle.getText().toString().trim(),
                     updateNoteEtxContent.getText().toString().trim(),
@@ -191,17 +192,15 @@ public class NoteUpdateActivity extends AppCompatActivity {
     public void onBackPressed() {
 
         if (fabUpdate.isShown()) {
-            Log.e(TAG, "shown------------------------");
             updateToDB();
             ActivityCompat.finishAfterTransition(NoteUpdateActivity.this);
-            NoteUpdateActivity.this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+            hideSoftKeyboard();
             finish();
 
         } else {
 
             toggle.setVisibility(View.GONE);
 
-            Log.e(TAG, "hidden------------------------");
             updateNoteEtxTitle.setEnabled(false);
             updateNoteEtxContent.setEnabled(false);
 
@@ -214,7 +213,7 @@ public class NoteUpdateActivity extends AppCompatActivity {
     }
 
     private void updateToDB() {
-        Log.i(TAG, "updateToDB()");
+        // Log.e(TAG, "updateToDB()");
 
         DBManager dbManager = DBManager.getInstance(NoteUpdateActivity.this);
 
@@ -238,32 +237,33 @@ public class NoteUpdateActivity extends AppCompatActivity {
             MainActivity.notifySnackbarUpdate(1);
 
         } else {
-            Log.i(TAG, " oops ! Not able to update ");
+            // Log.e(TAG, " oops ! Not able to update ");
             Toast.makeText(NoteUpdateActivity.this, "Unable to Update !!", Toast.LENGTH_SHORT).show();
         }
 
         dbManager.closeDataBase();
+
+        hideSoftKeyboard();
 
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        Log.i(TAG, "onStop()");
-        NoteUpdateActivity.this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
-
+        Log.e(TAG, "onStop()");
+        hideSoftKeyboard();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        Log.i(TAG, "onResume()");
+        Log.e(TAG, "onResume()");
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        Log.i(TAG, "onPause()");
+        Log.e(TAG, "onPause()");
     }
 
 
@@ -276,7 +276,7 @@ public class NoteUpdateActivity extends AppCompatActivity {
             recordPos = bundle.getInt(MyConstants.WISH_POSITION);
             rcvDate = bundle.getString(MyConstants.WISH_DATE);
 
-            Log.e(TAG, " getting Bundle + " + bundle.toString());
+            //  Log.e(TAG, " getting Bundle + " + bundle.toString());
 
             updateNoteEtxTitle.setText(rcvTitle);
             updateNoteEtxContent.setText(rcvContent);
@@ -358,12 +358,10 @@ public class NoteUpdateActivity extends AppCompatActivity {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.update_note_title_btn:
-                Log.w(TAG, "note_update_title btn clicked");
 
                 updateToDB();
 
                 ActivityCompat.finishAfterTransition(NoteUpdateActivity.this);
-                NoteUpdateActivity.this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
                 finish();
 
                 break;
@@ -376,7 +374,6 @@ public class NoteUpdateActivity extends AppCompatActivity {
                     toggle.setBackgroundDrawable(ContextCompat.getDrawable(NoteUpdateActivity.this, R.drawable.unchecked));
 
                     Animation slideUp = AnimationUtils.loadAnimation(NoteUpdateActivity.this, R.anim.slide_up);
-                    // Animation slideDown = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.slide_down);
 
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 
@@ -385,16 +382,19 @@ public class NoteUpdateActivity extends AppCompatActivity {
 
                     }
                     editLayoutUpdate.startAnimation(slideUp);
+                    NoteUpdateActivity.this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
                     defaultLayoutUpdate.setVisibility(View.GONE);
                     editLayoutUpdate.setVisibility(View.VISIBLE);
+
+
                     NoteUpdateActivity.this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
                     NoteUpdateActivity.this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+
 
                 } else {
                     updateNoteDateTv.setVisibility(View.GONE);
                     toggle.setBackgroundDrawable(ContextCompat.getDrawable(NoteUpdateActivity.this, R.drawable.checked));
                     Animation slideUp = AnimationUtils.loadAnimation(NoteUpdateActivity.this, R.anim.slide_up);
-                    // Animation slideDown = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.slide_down);
 
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 
@@ -403,14 +403,31 @@ public class NoteUpdateActivity extends AppCompatActivity {
                     }
 
                     defaultLayoutUpdate.setAnimation(slideUp);
+                    showSoftKeyboard(toggle);
+                    NoteUpdateActivity.this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
                     editLayoutUpdate.setVisibility(View.GONE);
                     defaultLayoutUpdate.setVisibility(View.VISIBLE);
-                    NoteUpdateActivity.this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
-                    NoteUpdateActivity.this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+
+
+                    /*NoteUpdateActivity.this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+                    NoteUpdateActivity.this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);*/
                 }
 
                 break;
         }
+    }
+
+    public void hideSoftKeyboard() {
+        if (getCurrentFocus() != null) {
+            InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+            inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+        }
+    }
+
+    public void showSoftKeyboard(View view) {
+        InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+        view.requestFocus();
+        inputMethodManager.showSoftInput(view, 0);
     }
 
     private void editTextTouch() {
@@ -435,4 +452,17 @@ public class NoteUpdateActivity extends AppCompatActivity {
         });
     }
 
+    @OnClick({R.id.update_note_etxTitle, R.id.update_note_etxContent})
+    public void onViewClicked2(View view) {
+        switch (view.getId()) {
+            case R.id.update_note_etxTitle:
+                NoteUpdateActivity.this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+                NoteUpdateActivity.this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+                break;
+            case R.id.update_note_etxContent:
+                NoteUpdateActivity.this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+                NoteUpdateActivity.this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+                break;
+        }
+    }
 }

@@ -1,7 +1,5 @@
 package redfoxclassic.hehe.util;
 
-import android.util.Log;
-
 public class MyAdapterPositionTracker {
 
     //used this pos to notify after delete to removeAt
@@ -13,12 +11,12 @@ public class MyAdapterPositionTracker {
 
 
     public static int getAdapterPositionMiss() {
-        Log.e(TAG, "MIS GET : " + myPos);
+      //  Log.e(TAG, "MIS GET : " + myPos);
         return myPos;
     }
 
     public static void setAdapterPositionMiss(int adapterPosition) {
-        Log.e(TAG, "MIS SET : " + adapterPosition);
+        //Log.e(TAG, "MIS SET : " + adapterPosition);
         myPos = adapterPosition;
 
     }

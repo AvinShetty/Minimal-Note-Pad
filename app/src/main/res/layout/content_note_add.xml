@@ -27,7 +27,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:hint="Title !"
+                android:hint="@string/content_add_title"
                 android:textSize="16sp"
                 android:textStyle="bold" />
 
@@ -39,7 +39,7 @@
                 android:layout_height="300dp"
                 android:layout_below="@+id/add_note_etxTitle"
                 android:layout_marginTop="20dp"
-                android:hint="Hi content ?"
+                android:hint="@string/content_add_content"
                 android:textSize="14sp" />
 
             <!--only visible when edit option taps-->

@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.RequiresApi;
 import android.support.v4.BuildConfig;
 import android.support.v4.app.ActivityOptionsCompat;
@@ -13,9 +14,9 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.transition.Slide;
 import android.util.Log;
@@ -25,7 +26,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -42,6 +43,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import redfoxclassic.hehe.Fab;
 import redfoxclassic.hehe.R;
+import redfoxclassic.hehe.data.favdb.DBManagerFav;
 import redfoxclassic.hehe.data.maindb.DBManager;
 import redfoxclassic.hehe.model.NoteModel;
 import redfoxclassic.hehe.ui.adapters.NoteAdapter;
@@ -72,7 +74,6 @@ public class MainActivity extends AppCompatActivity {
     private static MaterialSheetFab materialSheetFab;
 
     private NoteAdapter noteAdapter;
-    private LinearLayoutManager layoutManager;
     private List<NoteModel> noteModelList = new ArrayList<>();
 
     private Integer adapterClickedPosition;
@@ -81,9 +82,30 @@ public class MainActivity extends AppCompatActivity {
 
     private static int notifyValueAdd = 0;
     private static int notifyValueUpdate = 0;
+    private static int notifyFavourite = 0;
 
 
     private SearchView searchView;
+
+    private StaggeredGridLayoutManager layoutManager;
+
+
+    //Defined globally to remove callbacks when unused
+    private Handler handler = new Handler();
+    private Runnable runnableForAdd = new Runnable() {
+        @Override
+        public void run() {
+
+            transitionToNoteAddActivity();
+
+        }
+    };
+    private Runnable runnableForFav = new Runnable() {
+        @Override
+        public void run() {
+            transitionToFavouriteActivity();
+        }
+    };
 
 
     @Override
@@ -94,18 +116,19 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         ButterKnife.bind(this);
 
+
         if (BuildConfig.DEBUG) {          //by default returns false, but in production true :
             Log.e(TAG, "onCreate()");
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+       /* if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             setupWindowAnimations();
-        }
+        }*/
         setupFab();
 
         setupToolbar();
 
         noteAdapter = new NoteAdapter(noteModelList, MainActivity.this);
-        layoutManager = new LinearLayoutManager(MainActivity.this, LinearLayoutManager.VERTICAL, false);
+        layoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(noteAdapter);
@@ -117,6 +140,75 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
+    //---------------------------------------------------------------------------------------------------------------
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+
+        loadDataAll();
+
+    }
+    //---------------------------------------------------------------------------------------------------------------
+
+    @Override
+    protected void onResume() {
+        Log.e(TAG, "onResume()");
+        super.onResume();
+        loadDataAll();
+
+        if (notifyValueAdd == 1) {
+            // MySnackBarUtil.showSnackBar(MainActivity.this, MyConstants.SNACKBAR_ADD, "saved");
+            materialSheetFab.showFab();
+            notifyValueAdd = 0;
+        }
+        if (notifyValueUpdate == 1) {
+            //  MySnackBarUtil.showSnackBar(MainActivity.this, MyConstants.SNACKBAR_UPDATE, "update");
+            materialSheetFab.showFab();
+            notifyValueUpdate = 0;
+        }
+        if (notifyFavourite == 1) {
+            materialSheetFab.showFab();
+            notifyFavourite = 0;
+        }
+
+
+    }
+
+    @Override
+    protected void onPause() {
+        Log.e(TAG, "onPause()");
+        super.onPause();
+    }
+
+    //Methods to notify snackbar and show FAB
+    public static void notifySnackbarAdd(int value) {
+        notifyValueAdd = value;
+    }
+
+    public static void notifyFavourite(int value) {
+        notifyFavourite = value;
+
+    }
+
+    public static void notifySnackbarUpdate(int value) {
+        notifyValueUpdate = value;
+    }
+
+    @Override
+    protected void onStop() {
+        Log.e(TAG, "onStop()");
+        super.onStop();
+        hideSoftKeyboard();
+        if (handler != null && runnableForAdd != null) {
+            handler.removeCallbacksAndMessages(runnableForAdd);
+        }
+        if (handler != null && runnableForFav != null) {
+            handler.removeCallbacksAndMessages(runnableForFav);
+        }
+    }
+    //---------------------------------------------------------------------------------------------------------------
 
     void setupToolbar() {
 
@@ -125,89 +217,122 @@ public class MainActivity extends AppCompatActivity {
 
             getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.theme_primary_dark2));
         }
+    }
+
+    //---------------------------------------------------------------------------------------------------------------
+
+    private void setupFab() {
+
+        Fab fab = (Fab) findViewById(R.id.fab);
+        fab.getBackground().setColorFilter(ContextCompat.getColor(this, R.color.fab_sheet_bg), PorterDuff.Mode.SRC_IN);
+
+        int sheetColor = ContextCompat.getColor(MainActivity.this, R.color.background_card);
+        int fabColor = ContextCompat.getColor(MainActivity.this, R.color.fab_sheet_bg);
+
+        materialSheetFab = new MaterialSheetFab<>(fab, mainCardView, overlay, sheetColor, fabColor);
+
+        materialSheetFab.setEventListener(new MaterialSheetFabEventListener() {
+            @Override
+            public void onShowSheet() {
+                statusBarColor = getStatusBarColor();
+                setStatusBarColor(ContextCompat.getColor(MainActivity.this, R.color.theme_primary_dark2));
+            }
+
+            @Override
+            public void onHideSheet() {
+                setStatusBarColor(statusBarColor);
+            }
+        });
 
     }
 
-    @Override
-    protected void onNewIntent(Intent intent) {
-        Log.e(TAG, "onNewIntent()");
-        super.onNewIntent(intent);
-        setIntent(intent);
+    //----------------------------------------------------------------------------------------------------------------------------
+    @OnClick({R.id.fab_sheet_item_favorite, R.id.fab_sheet_item_create_note})
+    public void onViewClicked(View view) {
 
-        loadDataAll();
+        switch (view.getId()) {
 
-    }
+            case R.id.fab_sheet_item_favorite:
+                materialSheetFab.hideSheetThenFab();
+                handler.postDelayed(runnableForFav, 500);
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        MainActivity.this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+                break;
+            case R.id.fab_sheet_item_create_note:
 
-        Log.e(TAG, "onResume()");
-        loadDataAll();
-
-        if (notifyValueAdd == 1) {
-            MySnackBarUtil.showSnackBar(MainActivity.this, MyConstants.SNACKBAR_ADD, "saved");
-            notifyValueAdd = 0;
+                materialSheetFab.hideSheetThenFab();
+                handler.postDelayed(runnableForAdd, 500);
+                break;
         }
-        if (notifyValueUpdate == 1) {
-            MySnackBarUtil.showSnackBar(MainActivity.this, MyConstants.SNACKBAR_UPDATE, "update");
-            notifyValueUpdate = 0;
+    }
+
+
+    @SuppressWarnings("unchecked")
+    private void transitionToNoteAddActivity() {
+        Intent i = new Intent(MainActivity.this, NoteAddActivity.class);
+        ActivityOptionsCompat transitionActivityOptions = ActivityOptionsCompat.makeSceneTransitionAnimation(MainActivity.this);
+        startActivity(i, transitionActivityOptions.toBundle());
+    }
+
+    @SuppressWarnings("unchecked")
+    private void transitionToFavouriteActivity() {
+        Intent i = new Intent(MainActivity.this, NoteFavoriteActivity.class);
+        ActivityOptionsCompat transitionActivityOptions = ActivityOptionsCompat.makeSceneTransitionAnimation(MainActivity.this);
+        startActivity(i, transitionActivityOptions.toBundle());
+    }
+
+
+    private int getStatusBarColor() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            return getWindow().getStatusBarColor();
         }
-
-
-    }
-
-    public static void notifySnackbarAdd(int value) {
-        notifyValueAdd = value;
-    }
-
-    public static void notifySnackbarUpdate(int value) {
-        notifyValueUpdate = value;
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
+        return 0;
     }
 
 
-    public void loadDataAll() {
-        Log.e(TAG, "loadDataAll()");
-        moreGenericLoadData();
-
-    }
-
-    private void moreGenericLoadData() {
-        noteModelList.clear();
-
-        DBManager dbManager = DBManager.getInstance(MainActivity.this);
-        dbManager.openDataBase();
-        noteModelList = dbManager.getAllNoteList();
-
-        if (noteModelList.size() == 0) {
-
-            recyclerView.setVisibility(View.GONE);
-            imvEmpty.setVisibility(View.VISIBLE);
-            Log.e(TAG, " size : " + noteModelList.size());
-
-        } else {
-            recyclerView.setVisibility(View.VISIBLE);
-            imvEmpty.setVisibility(View.GONE);
-            Log.e(TAG, " size : " + noteModelList.size());
-            noteAdapter = new NoteAdapter(noteModelList, MainActivity.this);
-            recyclerView.setAdapter(noteAdapter);
-            noteAdapter.notifyDataSetChanged();
+    private void setStatusBarColor(int color) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().setStatusBarColor(color);
         }
+    }
 
-        dbManager.closeDataBase();
+    //----------------------------------------------------------------------------------------------------------------------------
 
+
+    private void touchListenerRecycler() {
+
+        recyclerView.addOnItemTouchListener(new MyRecyclerTouchListener(MainActivity.this, recyclerView,
+                new MyRecyclerTouchListener.ClickListenerTouch() {
+                    @Override
+                    public void onClickTouch(View view, int position) {
+
+                        adapterClickedPosition = position;
+
+                        NoteModel noteModel = noteModelList.get(position);
+
+                        Bundle bundle = new Bundle();
+                        bundle.putString(MyConstants.WISH_TITLE, noteModel.getTitle());
+                        bundle.putString(MyConstants.WISH_CONTENT, noteModel.getContent());
+                        bundle.putInt(MyConstants.WISH_POSITION, noteModelList.get(position).getId()); //return 3
+                        bundle.putString(MyConstants.WISH_DATE, noteModel.getDate());
+
+                        startActivity(new Intent(MainActivity.this, NoteUpdateActivity.class).putExtras(bundle));
+
+                    }
+
+                    @Override
+                    public void onLongClickTouch(View view, int position) {
+
+                        registerForContextMenu(view);
+                        adapterClickedPosition = position;
+
+
+                    }
+                }));
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
-        //this i for searchView widget, a bit different
         MenuItem menuItem = menu.findItem(R.id.action_search);
         searchView = (SearchView) menuItem.getActionView();
         searchViewCloseBtnListener();
@@ -219,8 +344,6 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-               /* Animation slideLeft = AnimationUtils.loadAnimation(MainActivity.this, R.anim.slide_left2);
-                toolbar.setAnimation(slideLeft);*/
                 toolbar.setBackgroundColor(ContextCompat.getColor(MainActivity.this, R.color.toolbar_search));
                 getSearchQuery(newText);
                 return false;
@@ -241,166 +364,7 @@ public class MainActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
-
-    // Material Sheet Fab Operation
-    //----------------------------------------------------------------------------------------------------------------------------
-    @OnClick({R.id.fab_sheet_item_favorite, R.id.fab_sheet_item_create_note})
-    public void onViewClicked(View view) {
-        switch (view.getId()) {
-            case R.id.fab_sheet_item_favorite:
-                Log.e(TAG, "item_Fav clicked)");
-                break;
-            case R.id.fab_sheet_item_create_note:
-                Log.e(TAG, "item_create clicked)");
-
-                transitionToActivity();
-                break;
-        }
-    }
-
-
-    private void setupFab() {
-
-        Log.e(TAG, "setupFab()");
-        Fab fab = (Fab) findViewById(R.id.fab);
-
-        //Life Saver
-        fab.getBackground().setColorFilter(ContextCompat.getColor(this, R.color.fab_sheet_bg), PorterDuff.Mode.SRC_IN);
-
-
-        int sheetColor = ContextCompat.getColor(MainActivity.this, R.color.background_card);
-        int fabColor = ContextCompat.getColor(MainActivity.this, R.color.fab_sheet_bg);
-
-        materialSheetFab = new MaterialSheetFab<>(fab, mainCardView, overlay, sheetColor, fabColor);
-
-        materialSheetFab.setEventListener(new MaterialSheetFabEventListener() {
-            @Override
-            public void onShowSheet() {
-                statusBarColor = getStatusBarColor();
-                setStatusBarColor(ContextCompat.getColor(MainActivity.this, R.color.theme_primary_dark2));
-            }
-
-            @Override
-            public void onHideSheet() {
-                setStatusBarColor(statusBarColor);
-            }
-        });
-
-
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        MainActivity.this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-
-    }
-
-    public static void hideSheetPlease() {
-        if (materialSheetFab.isSheetVisible()) {
-            materialSheetFab.hideSheet();
-        }
-    }
-
-    private int getStatusBarColor() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            return getWindow().getStatusBarColor();
-        }
-        return 0;
-    }
-
-    private void setStatusBarColor(int color) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            getWindow().setStatusBarColor(color);
-        }
-    }
-    //----------------------------------------------------------------------------------------------------------------
-
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    private void setupWindowAnimations() {
-        Log.e(TAG, "setupWindowAnimations()");
-        Slide slideTransition = new Slide();
-        slideTransition.setSlideEdge(Gravity.START);
-        slideTransition.setDuration(800);
-        getWindow().setReenterTransition(slideTransition);
-        getWindow().setExitTransition(slideTransition);
-    }
-
-
-    @SuppressWarnings("unchecked")
-    private void transitionToActivity() {
-        Intent i = new Intent(MainActivity.this, NoteAddActivity.class);
-        ActivityOptionsCompat transitionActivityOptions = ActivityOptionsCompat.makeSceneTransitionAnimation(MainActivity.this);
-        startActivity(i, transitionActivityOptions.toBundle());
-    }
-    //----------------------------------------------------------------------------------------------------------
-
-
-    private void touchListenerRecycler() {
-
-        recyclerView.addOnItemTouchListener(new MyRecyclerTouchListener(MainActivity.this, recyclerView,
-                new MyRecyclerTouchListener.ClickListenerTouch() {
-                    @Override
-                    public void onClickTouch(View view, int position) {
-                        Log.e(TAG, "onItemClick at :" + position);
-
-                        adapterClickedPosition = position;
-
-                        NoteModel noteModel = noteModelList.get(position);
-
-                        Bundle bundle = new Bundle();
-                        bundle.putString(MyConstants.WISH_TITLE, noteModel.getTitle());
-                        bundle.putString(MyConstants.WISH_CONTENT, noteModel.getContent());
-                        bundle.putInt(MyConstants.WISH_POSITION, noteModelList.get(position).getId()); //return 3
-                        bundle.putString(MyConstants.WISH_DATE, noteModel.getDate());
-                        Log.e(TAG, " bundle entered " + bundle.toString());
-
-                        startActivity(new Intent(MainActivity.this, NoteUpdateActivity.class).putExtras(bundle));
-
-                    }
-
-                    @Override
-                    public void onLongClickTouch(View view, int position) {
-                        Log.e(TAG, "onItem LONG Click at :" + position);
-
-                        registerForContextMenu(view);
-                        adapterClickedPosition = position;
-
-
-                    }
-                }));
-    }
     //---------------------------------------------------------------------------------------------------------------
-
-
-    private void numberOfRecords() {
-
-        DBManager dbManager = DBManager.getInstance(MainActivity.this);
-        dbManager.openDataBase();
-        Log.i(TAG, " Total Number of Records Available " + dbManager.getTotalNumberOfRecords());
-        dbManager.closeDataBase();
-
-    }
-
-    @Override
-    public void onBackPressed() {
-
-        if (materialSheetFab.isSheetVisible()) {
-            materialSheetFab.hideSheet();
-
-        }
-        if (!searchView.isIconified()) {
-            System.out.println("--------------------________________---------------");
-            searchView.onActionViewCollapsed();
-          /*  Animation slideRight = AnimationUtils.loadAnimation(MainActivity.this, R.anim.slide_right2);
-            toolbar.setAnimation(slideRight);*/
-            toolbar.setBackgroundColor(ContextCompat.getColor(MainActivity.this, R.color.theme_primary));
-            loadDataAll();
-        } else {
-            super.onBackPressed();
-        }
-
-    }
 
 
     @Override
@@ -410,6 +374,7 @@ public class MainActivity extends AppCompatActivity {
         menuInflater.inflate(R.menu.context_menu, menu);
 
     }
+
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
@@ -426,6 +391,23 @@ public class MainActivity extends AppCompatActivity {
 
                 break;
             case R.id.context_addToFav:
+
+                DBManagerFav dbManagerFav = DBManagerFav.getInstance(MainActivity.this);
+                dbManagerFav.openDataBase();
+
+                NoteModel noteModel = new NoteModel();
+                noteModel.setTitle(noteModelList.get(adapterClickedPosition).getTitle());
+                noteModel.setContent(noteModelList.get(adapterClickedPosition).getContent());
+                noteModel.setDate(noteModelList.get(adapterClickedPosition).getDate());
+                noteModel.setId(noteModelList.get(adapterClickedPosition).getId());
+
+                boolean status = dbManagerFav.insertNoteFav(noteModel);
+                if (status == true) {
+                    Toast.makeText(MainActivity.this, "Added to Favorites", Toast.LENGTH_SHORT).show();
+                } else {
+                }
+                dbManagerFav.closeDataBase();
+
                 break;
             default:
 
@@ -433,6 +415,7 @@ public class MainActivity extends AppCompatActivity {
 
         return true;
     }
+    //---------------------------------------------------------------------------------------------------------------
 
 
     private void deleteDialogOperation() {
@@ -443,10 +426,8 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
 
-
                         deleteOperation();
                         dialogInterface.dismiss();
-
                     }
                 }).setNeutralButton("DISMISS", new DialogInterface.OnClickListener() {
             @Override
@@ -458,30 +439,26 @@ public class MainActivity extends AppCompatActivity {
         }).show();
     }
 
-    private void deleteOperation() {
 
-        //have the adapter position
+    private void deleteOperation() {
         DBManager dbManager = DBManager.getInstance(MainActivity.this);
         dbManager.openDataBase();
-
 
         NoteModel noteModel = new NoteModel();
         noteModel.setId(noteModelList.get(adapterClickedPosition).getId());
 
-
         int status = dbManager.deleteNote(noteModelList.get(adapterClickedPosition).getId());
         if (status > 0) {
-            //now remove from list
             noteAdapter.removeAt(adapterClickedPosition);
             MySnackBarUtil.showSnackBar(MainActivity.this, MyConstants.SNACKBAR_DELETE, "delete");
 
         }
         dbManager.closeDataBase();
-        loadDataAll();
+        //  loadDataAll();
     }
+    //---------------------------------------------------------------------------------------------------------------
 
     private void getSearchQuery(String query) {
-        Log.e(TAG, "query : " + query);
 
         DBManager dbManager = DBManager.getInstance(MainActivity.this);
         dbManager.openDataBase();
@@ -491,24 +468,97 @@ public class MainActivity extends AppCompatActivity {
         noteAdapter = new NoteAdapter(noteModelList, MainActivity.this);
         recyclerView.setAdapter(noteAdapter);
         noteAdapter.notifyDataSetChanged();
-
-        System.out.println("count");
         dbManager.closeDataBase();
 
 
     }
 
+    //---------------------------------------------------------------------------------------------------------------
     private void searchViewCloseBtnListener() {
         searchView.setOnCloseListener(new SearchView.OnCloseListener() {
             @Override
             public boolean onClose() {
-               /* Animation slideRight = AnimationUtils.loadAnimation(MainActivity.this, R.anim.slide_right2);
-                toolbar.setAnimation(slideRight);*/
                 toolbar.setBackgroundColor(ContextCompat.getColor(MainActivity.this, R.color.theme_primary));
                 return false;
             }
         });
 
+    }
+    //---------------------------------------------------------------------------------------------------------------
+
+    private void numberOfRecords() {
+
+        DBManager dbManager = DBManager.getInstance(MainActivity.this);
+        dbManager.openDataBase();
+        dbManager.closeDataBase();
+
+    }
+
+    //----------------------------------------------------------------------------------------------------------------
+    public void loadDataAll() {
+        layoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+        recyclerView.setLayoutManager(layoutManager);
+        moreGenericLoadData();
+
+    }
+
+    private void moreGenericLoadData() {
+        noteModelList.clear();
+
+        DBManager dbManager = DBManager.getInstance(MainActivity.this);
+        dbManager.openDataBase();
+        noteModelList = dbManager.getAllNoteList();
+
+        if (noteModelList.size() == 0) {
+
+            recyclerView.setVisibility(View.GONE);
+            imvEmpty.setVisibility(View.VISIBLE);
+
+        } else {
+            recyclerView.setVisibility(View.VISIBLE);
+            imvEmpty.setVisibility(View.GONE);
+            noteAdapter = new NoteAdapter(noteModelList, MainActivity.this);
+            recyclerView.setAdapter(noteAdapter);
+            noteAdapter.notifyDataSetChanged();
+        }
+
+        dbManager.closeDataBase();
+
+
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    private void setupWindowAnimations() {
+        Slide slideTransition = new Slide();
+        slideTransition.setSlideEdge(Gravity.START);
+        slideTransition.setDuration(800);
+        getWindow().setReenterTransition(slideTransition);
+        getWindow().setExitTransition(slideTransition);
+    }
+
+
+    public void hideSoftKeyboard() {
+        if (getCurrentFocus() != null) {
+            InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+            inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+
+        if (materialSheetFab.isSheetVisible()) {
+            materialSheetFab.hideSheet();
+
+        } else {
+            if (!searchView.isIconified()) {
+                searchView.onActionViewCollapsed();
+                toolbar.setBackgroundColor(ContextCompat.getColor(MainActivity.this, R.color.theme_primary));
+                loadDataAll();
+            } else {
+                super.onBackPressed();
+            }
+        }
     }
 
 }

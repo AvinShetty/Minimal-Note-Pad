@@ -1,6 +1,5 @@
 package redfoxclassic.hehe.ui.activity;
 
-import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
@@ -17,6 +16,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -78,9 +78,7 @@ public class NoteAddActivity extends AppCompatActivity {
         setContentView(R.layout.activity_note_add);
 
         ButterKnife.bind(this);
-        Log.w(TAG, "onCreate()");
-        MainActivity.hideSheetPlease();
-
+        Log.d(TAG, "onCreate()");
 
         setupToolbar();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -98,7 +96,6 @@ public class NoteAddActivity extends AppCompatActivity {
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private void setUpAnimations() {
-        Log.w(TAG, "setUpAnimations()");
         Transition transition = new Explode();
         transition.setDuration(800);
         getWindow().setEnterTransition(transition);
@@ -129,7 +126,6 @@ public class NoteAddActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         if (id == R.id.create_share) {
-            Log.w(TAG, "note_add_share btn clicked");
             MyMiscellaneousUtil.shareData(
                     addNoteEtxTitle.getText().toString().trim(),
                     addNoteEtxContent.getText().toString().trim(),
@@ -142,7 +138,6 @@ public class NoteAddActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        //super.onBackPressed();
         saveToDB();
         ActivityCompat.finishAfterTransition(NoteAddActivity.this);
         finish();
@@ -222,12 +217,11 @@ public class NoteAddActivity extends AppCompatActivity {
 
     @OnClick({R.id.add_note_title_btn, R.id.add_note_toggle})
     public void onViewClicked(View view) {
+
         switch (view.getId()) {
+
             case R.id.add_note_title_btn:
-                Log.w(TAG, "note_add_title btn clicked");
-
                 saveToDB();
-
                 ActivityCompat.finishAfterTransition(NoteAddActivity.this);
                 finish();
 
@@ -235,13 +229,10 @@ public class NoteAddActivity extends AppCompatActivity {
             case R.id.add_note_toggle:
                 if (toggle.isChecked()) {
 
-
                     addNoteDateTv.setVisibility(View.VISIBLE);
                     toggle.setBackgroundDrawable(ContextCompat.getDrawable(NoteAddActivity.this, R.drawable.unchecked));
 
                     Animation slideUp = AnimationUtils.loadAnimation(NoteAddActivity.this, R.anim.slide_up);
-                    // Animation slideDown = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.slide_down);
-
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 
                         getWindow().setStatusBarColor(ContextCompat.getColor(NoteAddActivity.this, R.color.createStatusBarSecondary));
@@ -273,29 +264,15 @@ public class NoteAddActivity extends AppCompatActivity {
 
     //------------------------------------------------------------------------------------------------------------
 
-    private void shareData() {
-
-        String shareBody = "Title : " + addNoteEtxTitle.getText().toString().trim() + "\n" +
-                " Content : " + addNoteEtxContent.getText().toString().trim();
-        Intent sharingIntent = new Intent(Intent.ACTION_SEND);
-        sharingIntent.setType("text/plain");
-        sharingIntent.putExtra(Intent.EXTRA_SUBJECT, "HEY NOOB");
-        sharingIntent.putExtra(Intent.EXTRA_TEXT, shareBody);
-        startActivity(Intent.createChooser(sharingIntent, "Share your Note with ..."));
-    }
-
     private void saveToDB() {
-        Log.i(TAG, "saveToDB()");
 
         DBManager dbManager = DBManager.getInstance(NoteAddActivity.this);
-
         dbManager.openDataBase();
 
         NoteModel noteModel = new NoteModel();
 
         String title = addNoteEtxTitle.getText().toString().trim();
         String content = addNoteEtxContent.getText().toString().trim();
-        //now during sending, send exact time, not the setText of tv
         String dateText = MyDate.formatDate(System.currentTimeMillis());
 
 
@@ -307,7 +284,7 @@ public class NoteAddActivity extends AppCompatActivity {
         boolean saveStatus = dbManager.insertNote(noteModel);
 
         if (saveStatus == true) {
-            Log.i(TAG, " successfully saved ");
+            // Log.i(TAG, " successfully saved ");
 
             //well , for separated activity , use Singleton + no need to notify loadDataAll
             //but fragment within the same host, must notify the loadAll( Not SingleTon used) //this theory is not optimal although
@@ -318,7 +295,6 @@ public class NoteAddActivity extends AppCompatActivity {
 
 
         } else {
-            Log.i(TAG, " oops ! Not able to save ");
             Toast.makeText(NoteAddActivity.this, "Unable to Save !!", Toast.LENGTH_SHORT).show();
             addNoteEtxTitle.setFocusable(true);
             addNoteEtxTitle.setError("Try Again !");
@@ -326,15 +302,16 @@ public class NoteAddActivity extends AppCompatActivity {
 
         dbManager.closeDataBase();
 
+        hideSoftKeyboard();
+
+
     }
+
 
     @Override
     protected void onStop() {
         super.onStop();
         Log.i(TAG, "onStop()");
-/*
-        MainActivity.hideSheetPlease();
-*/
     }
 
     @Override
@@ -347,5 +324,13 @@ public class NoteAddActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         Log.i(TAG, "onPause()");
+
+    }
+
+    public void hideSoftKeyboard() {
+        if (getCurrentFocus() != null) {
+            InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+            inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+        }
     }
 }

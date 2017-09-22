@@ -5,16 +5,17 @@
     <item
         android:id="@+id/context_delete"
         android:orderInCategory="100"
-        android:title="Delete"
-        app:showAsAction="always" />
+        android:title="@string/context_menu_delete"
+        app:showAsAction="always"
+        tools:ignore="AlwaysShowAction" />
     <item
         android:id="@+id/context_share"
         android:orderInCategory="200"
-        android:title="Share Your Note"
+        android:title="@string/context_menu_shareYourNote"
         app:showAsAction="always" />
     <item
         android:id="@+id/context_addToFav"
         android:orderInCategory="300"
-        android:title="Mark as Favourite"
+        android:title="@string/context_menu_addToFav"
         app:showAsAction="always" />
 </menu>

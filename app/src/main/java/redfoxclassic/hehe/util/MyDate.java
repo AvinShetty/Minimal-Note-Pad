@@ -1,7 +1,6 @@
 package redfoxclassic.hehe.util;
 
 import android.annotation.SuppressLint;
-import android.util.Log;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -13,7 +12,7 @@ public class MyDate {
 
     public static String formatDate(long dateInMillis) {
 
-        Log.e(TAG, "formatDate()");
+     //   Log.e(TAG, "formatDate()");
 
         @SuppressLint("SimpleDateFormat")
         DateFormat dateFormat = new SimpleDateFormat("dd-MMM-yyyy hh:mm:ss a");

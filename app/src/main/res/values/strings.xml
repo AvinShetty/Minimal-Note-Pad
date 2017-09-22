@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">HEHE">Pad</string>
+    <string name="app_name">Fun NotePad</string>
     <string name="action_settings">Settings</string>
 
 
@@ -12,11 +12,20 @@
     <!--create note : RESET-->
     <string name="create_note_reset_btn">RESET</string>
     <string name="title_activity_main2">Main2Activity</string>
-    <string name="title_activity_note_update">NoteUpdateActivity</string>
+    <string name="title_activity_note_update">Update Note</string>
     <string name="note_delete_msg">Note Deleted</string>
     <string name="note_update_msg">Note Updated</string>
     <string name="note_add_msg">Note Saved</string>
-    <string name="title_activity_note_favorite">NoteFavoriteActivity</string>
+    <string name="title_activity_note_favorite">Favourite Notes</string>
+    <string name="context_menu_addToFav">Add to Favourite</string>
+    <string name="context_menu_shareYourNote">Share Your Note</string>
+    <string name="context_menu_delete">Delete</string>
+    <string name="menu_share">Share</string>
+    <string name="menu_main_search">SEARCH</string>
+    <string name="content_add_title">Title !</string>
+    <string name="content_add_content">Put your thoughts here ..</string>
+    <string name="content_update_title">Title !</string>
+    <string name="content_update_content">Modify your thoughts ..</string>
 
 
 </resources>
