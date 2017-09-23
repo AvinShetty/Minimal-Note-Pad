@@ -6,7 +6,7 @@ public class NoteModel {
     private String content;
     private int id;
     private String date;
-
+//
     public String getDate() {
         return date;
     }
