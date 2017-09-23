@@ -1,0 +1,17 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="redfoxclassic.hehe.ui.activity.MainActivity">
+    <item
+        android:id="@+id/context_delete2"
+        android:orderInCategory="100"
+        android:title="@string/context_menu_delete"
+        app:showAsAction="always"
+        tools:ignore="AlwaysShowAction" />
+    <item
+        android:id="@+id/context_share2"
+        android:orderInCategory="200"
+        android:title="@string/context_menu_shareYourNote"
+        app:showAsAction="always" />
+
+</menu>

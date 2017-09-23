@@ -313,7 +313,6 @@ public class MainActivity extends AppCompatActivity {
                     public void onClickTouch(View view, int position) {
 
                         adapterClickedPosition = position;
-
                         NoteModel noteModel = noteModelList.get(position);
 
                         Bundle bundle = new Bundle();
@@ -324,6 +323,7 @@ public class MainActivity extends AppCompatActivity {
 
                         //   startActivity(new Intent(MainActivity.this, NoteUpdateActivity.class).putExtras(bundle));
 
+                        materialSearchView.closeSearch();
                         Intent i = new Intent(MainActivity.this, NoteUpdateActivity.class);
                         i.putExtras(bundle);
                         ActivityOptionsCompat transitionActivityOptions = ActivityOptionsCompat.makeSceneTransitionAnimation(MainActivity.this);

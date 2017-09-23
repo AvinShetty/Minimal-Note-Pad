@@ -84,6 +84,8 @@ public class NoteFavoriteActivity extends AppCompatActivity {
     }
 
     public void loadDataAll() {
+        layoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+        recyclerView.setLayoutManager(layoutManager);
         moreGenericLoadData();
 
     }
@@ -138,7 +140,8 @@ public class NoteFavoriteActivity extends AppCompatActivity {
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
         MenuInflater menuInflater = getMenuInflater();
-        menuInflater.inflate(R.menu.context_menu, menu);
+        menuInflater.inflate(R.menu.context_menu2, menu);
+
 
     }
 
@@ -148,11 +151,11 @@ public class NoteFavoriteActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         switch (id) {
-            case R.id.context_delete:
+            case R.id.context_delete2:
                 deleteDialogOperation();
 
                 break;
-            case R.id.context_share:
+            case R.id.context_share2:
                 MyMiscellaneousUtil.shareDataOnClick(adapterClickedPosition, noteModelList, NoteFavoriteActivity.this);
                 break;
             default:
