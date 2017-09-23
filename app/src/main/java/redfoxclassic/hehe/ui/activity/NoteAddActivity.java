@@ -8,9 +8,9 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.transition.Explode;
-import android.transition.Transition;
+import android.transition.Slide;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -96,9 +96,10 @@ public class NoteAddActivity extends AppCompatActivity {
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private void setUpAnimations() {
-        Transition transition = new Explode();
-        transition.setDuration(800);
-        getWindow().setEnterTransition(transition);
+        Slide slide = new Slide();
+        slide.setDuration(800);
+        slide.setSlideEdge(Gravity.END);
+        getWindow().setEnterTransition(slide);
     }
 
 

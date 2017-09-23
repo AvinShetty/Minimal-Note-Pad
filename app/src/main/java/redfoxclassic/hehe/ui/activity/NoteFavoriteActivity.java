@@ -64,7 +64,7 @@ public class NoteFavoriteActivity extends AppCompatActivity {
 
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            setupWindowAnimations();
+            setUpAnimations();
         }
 
         noteAdapter = new NoteAdapter(noteModelList, NoteFavoriteActivity.this);
@@ -229,14 +229,6 @@ public class NoteFavoriteActivity extends AppCompatActivity {
         hideSoftKeyboard();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    private void setupWindowAnimations() {
-        Slide slideTransition = new Slide();
-        slideTransition.setSlideEdge(Gravity.START);
-        slideTransition.setDuration(800);
-        getWindow().setReenterTransition(slideTransition);
-        getWindow().setExitTransition(slideTransition);
-    }
 
     @Override
     public void onBackPressed() {
@@ -249,5 +241,13 @@ public class NoteFavoriteActivity extends AppCompatActivity {
             InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
             inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
         }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    private void setUpAnimations() {
+        Slide slide = new Slide();
+        slide.setDuration(800);
+        slide.setSlideEdge(Gravity.END);
+        getWindow().setEnterTransition(slide);
     }
 }

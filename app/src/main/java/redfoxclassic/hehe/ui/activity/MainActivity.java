@@ -1,11 +1,14 @@
 package redfoxclassic.hehe.ui.activity;
 
+import android.app.SearchManager;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.speech.RecognizerIntent;
 import android.support.annotation.RequiresApi;
 import android.support.v4.BuildConfig;
 import android.support.v4.app.ActivityOptionsCompat;
@@ -15,9 +18,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SearchView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.transition.Slide;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -34,6 +37,7 @@ import android.widget.Toast;
 import com.gordonwong.materialsheetfab.DimOverlayFrameLayout;
 import com.gordonwong.materialsheetfab.MaterialSheetFab;
 import com.gordonwong.materialsheetfab.MaterialSheetFabEventListener;
+import com.miguelcatalan.materialsearchview.MaterialSearchView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -85,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
     private static int notifyFavourite = 0;
 
 
-    private SearchView searchView;
+    private MaterialSearchView materialSearchView;
 
     private StaggeredGridLayoutManager layoutManager;
 
@@ -120,9 +124,9 @@ public class MainActivity extends AppCompatActivity {
         if (BuildConfig.DEBUG) {          //by default returns false, but in production true :
             Log.e(TAG, "onCreate()");
         }
-       /* if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             setupWindowAnimations();
-        }*/
+        }
         setupFab();
 
         setupToolbar();
@@ -159,12 +163,12 @@ public class MainActivity extends AppCompatActivity {
         loadDataAll();
 
         if (notifyValueAdd == 1) {
-            // MySnackBarUtil.showSnackBar(MainActivity.this, MyConstants.SNACKBAR_ADD, "saved");
+            MySnackBarUtil.showSnackBar(MainActivity.this, MyConstants.SNACKBAR_ADD, "saved");
             materialSheetFab.showFab();
             notifyValueAdd = 0;
         }
         if (notifyValueUpdate == 1) {
-            //  MySnackBarUtil.showSnackBar(MainActivity.this, MyConstants.SNACKBAR_UPDATE, "update");
+            MySnackBarUtil.showSnackBar(MainActivity.this, MyConstants.SNACKBAR_UPDATE, "update");
             materialSheetFab.showFab();
             notifyValueUpdate = 0;
         }
@@ -254,12 +258,15 @@ public class MainActivity extends AppCompatActivity {
 
             case R.id.fab_sheet_item_favorite:
                 materialSheetFab.hideSheetThenFab();
+                materialSearchView.closeSearch();
                 handler.postDelayed(runnableForFav, 500);
 
                 break;
             case R.id.fab_sheet_item_create_note:
 
                 materialSheetFab.hideSheetThenFab();
+                materialSearchView.closeSearch();
+
                 handler.postDelayed(runnableForAdd, 500);
                 break;
         }
@@ -315,7 +322,12 @@ public class MainActivity extends AppCompatActivity {
                         bundle.putInt(MyConstants.WISH_POSITION, noteModelList.get(position).getId()); //return 3
                         bundle.putString(MyConstants.WISH_DATE, noteModel.getDate());
 
-                        startActivity(new Intent(MainActivity.this, NoteUpdateActivity.class).putExtras(bundle));
+                        //   startActivity(new Intent(MainActivity.this, NoteUpdateActivity.class).putExtras(bundle));
+
+                        Intent i = new Intent(MainActivity.this, NoteUpdateActivity.class);
+                        i.putExtras(bundle);
+                        ActivityOptionsCompat transitionActivityOptions = ActivityOptionsCompat.makeSceneTransitionAnimation(MainActivity.this);
+                        startActivity(i, transitionActivityOptions.toBundle());
 
                     }
 
@@ -334,9 +346,12 @@ public class MainActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
         MenuItem menuItem = menu.findItem(R.id.action_search);
-        searchView = (SearchView) menuItem.getActionView();
-        searchViewCloseBtnListener();
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+
+        materialSearchView = (MaterialSearchView) findViewById(R.id.search_view);
+        materialSearchView.setMenuItem(menuItem);
+
+
+        materialSearchView.setOnQueryTextListener(new MaterialSearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 return false;
@@ -344,12 +359,15 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                toolbar.setBackgroundColor(ContextCompat.getColor(MainActivity.this, R.color.toolbar_search));
+                layoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+                recyclerView.setLayoutManager(layoutManager);
                 getSearchQuery(newText);
+                //onActivityResult(1,1,newText);
                 return false;
             }
         });
 
+        materialSearchView.setSuggestions(getResources().getStringArray(R.array.query_suggestions));
         return true;
     }
 
@@ -472,18 +490,6 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
-
-    //---------------------------------------------------------------------------------------------------------------
-    private void searchViewCloseBtnListener() {
-        searchView.setOnCloseListener(new SearchView.OnCloseListener() {
-            @Override
-            public boolean onClose() {
-                toolbar.setBackgroundColor(ContextCompat.getColor(MainActivity.this, R.color.theme_primary));
-                return false;
-            }
-        });
-
-    }
     //---------------------------------------------------------------------------------------------------------------
 
     private void numberOfRecords() {
@@ -507,6 +513,7 @@ public class MainActivity extends AppCompatActivity {
 
         DBManager dbManager = DBManager.getInstance(MainActivity.this);
         dbManager.openDataBase();
+
         noteModelList = dbManager.getAllNoteList();
 
         if (noteModelList.size() == 0) {
@@ -523,17 +530,21 @@ public class MainActivity extends AppCompatActivity {
         }
 
         dbManager.closeDataBase();
-
-
     }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private void setupWindowAnimations() {
-        Slide slideTransition = new Slide();
-        slideTransition.setSlideEdge(Gravity.START);
-        slideTransition.setDuration(800);
-        getWindow().setReenterTransition(slideTransition);
-        getWindow().setExitTransition(slideTransition);
+        Slide slideExit = new Slide();
+        slideExit.setSlideEdge(Gravity.START);
+        slideExit.setDuration(800);
+        slideExit.excludeTarget(R.id.toolbar, true);
+/*
+        slideExit.excludeTarget(View.SYSTEM_UI_FLAG_LOW_PROFILE, true); //System Bar
+*/
+        getWindow().setExitTransition(slideExit);
+        //  getWindow().setReenterTransition(slideExit);
+
+
     }
 
 
@@ -551,8 +562,8 @@ public class MainActivity extends AppCompatActivity {
             materialSheetFab.hideSheet();
 
         } else {
-            if (!searchView.isIconified()) {
-                searchView.onActionViewCollapsed();
+            if (materialSearchView.isSearchOpen()) {
+                materialSearchView.closeSearch();
                 toolbar.setBackgroundColor(ContextCompat.getColor(MainActivity.this, R.color.theme_primary));
                 loadDataAll();
             } else {

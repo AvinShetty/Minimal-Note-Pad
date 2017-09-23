@@ -32,4 +32,12 @@
 
 
     <!--textColor-->
+
+
+    <string-array name="query_suggestions">
+        <item>Batman</item>
+        <item>Buy a Phone</item>
+        <item>Cristiano Ronaldo</item>
+        <item>Movie</item>
+    </string-array>
 </resources>

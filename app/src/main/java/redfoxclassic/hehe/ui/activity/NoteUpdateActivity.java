@@ -12,7 +12,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.transition.Explode;
-import android.transition.Transition;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -95,7 +94,6 @@ public class NoteUpdateActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         fabUpdate.getBackground().setColorFilter(ContextCompat.getColor(this, R.color.update_note_fab_color), PorterDuff.Mode.SRC_IN);
-        //MainActivity.hideSheetPlease();
 
         setupToolbar();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -112,7 +110,6 @@ public class NoteUpdateActivity extends AppCompatActivity {
         toggle.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
-                // Log.e(TAG, "onTOuch");
                 NoteUpdateActivity.this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
                 NoteUpdateActivity.this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
                 return false;
@@ -125,8 +122,6 @@ public class NoteUpdateActivity extends AppCompatActivity {
 
     @OnClick(R.id.update_note_fab)
     public void onFabUpdate() {
-        // Log.e(TAG, "fab update");
-
         toggle.setVisibility(View.VISIBLE);
 
 
@@ -147,10 +142,10 @@ public class NoteUpdateActivity extends AppCompatActivity {
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private void setUpAnimations() {
-        // Log.w(TAG, "setUpAnimations()");
-        Transition transition = new Explode();
-        transition.setDuration(800);
-        getWindow().setEnterTransition(transition);
+        Explode explode = new Explode();
+        explode.setDuration(800);
+        getWindow().setEnterTransition(explode);
+
     }
 
 
@@ -213,37 +208,45 @@ public class NoteUpdateActivity extends AppCompatActivity {
     }
 
     private void updateToDB() {
-        // Log.e(TAG, "updateToDB()");
-
-        DBManager dbManager = DBManager.getInstance(NoteUpdateActivity.this);
-
-        dbManager.openDataBase();
-
-        NoteModel noteModel = new NoteModel();
-
         String title = updateNoteEtxTitle.getText().toString().trim();
         String content = updateNoteEtxContent.getText().toString().trim();
         String dateText = MyDate.formatDate(System.currentTimeMillis());
 
-        noteModel.setTitle(title);
-        noteModel.setContent(content);
-        noteModel.setDate(dateText);
-        noteModel.setId(recordPos);
 
-        long rowsAffected = dbManager.updateNote(noteModel, recordPos);
+        if (title.length() != rcvTitle.length() || title.length() > 0 &&
+                content.length() != rcvContent.length() || content.length() > 0) {
 
-        if (rowsAffected > 0) {
 
-            MainActivity.notifySnackbarUpdate(1);
+            DBManager dbManager = DBManager.getInstance(NoteUpdateActivity.this);
 
+            dbManager.openDataBase();
+
+            NoteModel noteModel = new NoteModel();
+
+
+            noteModel.setTitle(title);
+            noteModel.setContent(content);
+            noteModel.setDate(dateText);
+            noteModel.setId(recordPos);
+
+
+            long rowsAffected = dbManager.updateNote(noteModel, recordPos);
+
+            if (rowsAffected > 0) {
+
+                MainActivity.notifySnackbarUpdate(1);
+
+
+            } else {
+                Toast.makeText(NoteUpdateActivity.this, "Unable to Update !!", Toast.LENGTH_SHORT).show();
+            }
+
+            dbManager.closeDataBase();
+
+            hideSoftKeyboard();
         } else {
-            // Log.e(TAG, " oops ! Not able to update ");
-            Toast.makeText(NoteUpdateActivity.this, "Unable to Update !!", Toast.LENGTH_SHORT).show();
+            finish();
         }
-
-        dbManager.closeDataBase();
-
-        hideSoftKeyboard();
 
     }
 
@@ -275,8 +278,6 @@ public class NoteUpdateActivity extends AppCompatActivity {
             rcvContent = bundle.getString(MyConstants.WISH_CONTENT);
             recordPos = bundle.getInt(MyConstants.WISH_POSITION);
             rcvDate = bundle.getString(MyConstants.WISH_DATE);
-
-            //  Log.e(TAG, " getting Bundle + " + bundle.toString());
 
             updateNoteEtxTitle.setText(rcvTitle);
             updateNoteEtxContent.setText(rcvContent);
@@ -465,4 +466,6 @@ public class NoteUpdateActivity extends AppCompatActivity {
                 break;
         }
     }
+
+
 }

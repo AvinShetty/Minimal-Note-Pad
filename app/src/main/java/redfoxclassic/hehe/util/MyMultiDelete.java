@@ -31,7 +31,7 @@ public class MyMultiDelete {
            // ((MainActivity) context).setPositionNotifyDelete(position);
 
 
-            ((MainActivity) context).loadDataAll();
+            //((MainActivity) context).loadDataAll();
 
             //MySnackBarUtil.showSnackBar((MainActivity) view.getContext(), MyConstants.SNACKBAR_DELETE, "delete");
 
