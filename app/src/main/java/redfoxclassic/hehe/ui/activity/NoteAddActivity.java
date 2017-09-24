@@ -3,14 +3,11 @@ package redfoxclassic.hehe.ui.activity;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.transition.Slide;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -76,32 +73,13 @@ public class NoteAddActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_note_add);
-
         ButterKnife.bind(this);
-        Log.d(TAG, "onCreate()");
 
         setupToolbar();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            setUpAnimations();
-        }
-
-
         String date = MyDate.formatDate(System.currentTimeMillis());
         addNoteDateTv.setText(date);
         addNoteDateTv2.setText(date);
-
-
     }
-
-
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    private void setUpAnimations() {
-        Slide slide = new Slide();
-        slide.setDuration(800);
-        slide.setSlideEdge(Gravity.END);
-        getWindow().setEnterTransition(slide);
-    }
-
 
     void setupToolbar() {
         toolbar = (Toolbar) findViewById(R.id.add_note_toolbar);
@@ -109,12 +87,9 @@ public class NoteAddActivity extends AppCompatActivity {
 
         toolbar.setBackgroundColor(ContextCompat.getColor(this, R.color.createToolBarBarPrimary));
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-
             getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.createStatusBarPrimary));
         }
-
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -137,24 +112,14 @@ public class NoteAddActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void onBackPressed() {
-        saveToDB();
-        ActivityCompat.finishAfterTransition(NoteAddActivity.this);
-        finish();
-
-
-    }
-
-    //---------------------------------------------------------------------------------------------------------------------
     @OnClick({R.id.add_note_bold, R.id.add_note_italic})
     public void onViewClickedTextStyleFormat(View view) {
         switch (view.getId()) {
             case R.id.add_note_bold:
-                if (addNoteEtxContent.hasFocus() == true) {
+                if (addNoteEtxContent.hasFocus()) {
                     addNoteEtxContent.setTypeface(null, Typeface.BOLD);
                 }
-                if (addNoteEtxTitle.hasFocus() == true) {
+                if (addNoteEtxTitle.hasFocus()) {
                     addNoteEtxTitle.setTypeface(null, Typeface.BOLD);
                 }
 
@@ -162,10 +127,10 @@ public class NoteAddActivity extends AppCompatActivity {
                 break;
             case R.id.add_note_italic:
 
-                if (addNoteEtxContent.hasFocus() == true) {
+                if (addNoteEtxContent.hasFocus()) {
                     addNoteEtxContent.setTypeface(null, Typeface.ITALIC);
                 }
-                if (addNoteEtxTitle.hasFocus() == true) {
+                if (addNoteEtxTitle.hasFocus()) {
                     addNoteEtxTitle.setTypeface(null, Typeface.ITALIC);
                 }
 
@@ -178,12 +143,12 @@ public class NoteAddActivity extends AppCompatActivity {
     public void onViewClickedTextSizeFormat(View view) {
         switch (view.getId()) {
             case R.id.add_note_textPlus:
-                if (addNoteEtxContent.hasFocus() == true) {
+                if (addNoteEtxContent.hasFocus()) {
                     defaultTextSizeContent++;
                     addNoteEtxContent.setTextSize(defaultTextSizeContent);
                 }
 
-                if (addNoteEtxTitle.hasFocus() == true) {
+                if (addNoteEtxTitle.hasFocus()) {
                     defaultTextSizeTitle++;
                     addNoteEtxTitle.setTextSize(defaultTextSizeTitle);
 
@@ -191,11 +156,11 @@ public class NoteAddActivity extends AppCompatActivity {
 
                 break;
             case R.id.add_note_textMinus:
-                if (addNoteEtxContent.hasFocus() == true) {
+                if (addNoteEtxContent.hasFocus()) {
                     defaultTextSizeContent--;
                     addNoteEtxContent.setTextSize(defaultTextSizeContent);
                 }
-                if (addNoteEtxTitle.hasFocus() == true) {
+                if (addNoteEtxTitle.hasFocus()) {
                     defaultTextSizeTitle--;
                     addNoteEtxTitle.setTextSize(defaultTextSizeTitle);
 
@@ -214,7 +179,6 @@ public class NoteAddActivity extends AppCompatActivity {
 
 
     }
-//-------------------------------------------------------------------------------------------------------------
 
     @OnClick({R.id.add_note_title_btn, R.id.add_note_toggle})
     public void onViewClicked(View view) {
@@ -267,47 +231,42 @@ public class NoteAddActivity extends AppCompatActivity {
 
     private void saveToDB() {
 
-        DBManager dbManager = DBManager.getInstance(NoteAddActivity.this);
-        dbManager.openDataBase();
-
-        NoteModel noteModel = new NoteModel();
-
         String title = addNoteEtxTitle.getText().toString().trim();
         String content = addNoteEtxContent.getText().toString().trim();
         String dateText = MyDate.formatDate(System.currentTimeMillis());
 
 
-        noteModel.setTitle(title);
-        noteModel.setContent(content);
-        noteModel.setDate(dateText);
+        if (title.length() > 0 || content.length() > 0) {
+            DBManager dbManager = DBManager.getInstance(NoteAddActivity.this);
+            dbManager.openDataBase();
+
+            NoteModel noteModel = new NoteModel();
 
 
-        boolean saveStatus = dbManager.insertNote(noteModel);
+            noteModel.setTitle(title);
+            noteModel.setContent(content);
+            noteModel.setDate(dateText);
 
-        if (saveStatus == true) {
-            // Log.i(TAG, " successfully saved ");
+            boolean saveStatus = dbManager.insertNote(noteModel);
 
-            //well , for separated activity , use Singleton + no need to notify loadDataAll
-            //but fragment within the same host, must notify the loadAll( Not SingleTon used) //this theory is not optimal although
-            //I followed previously
+            if (saveStatus == true) {
+                MainActivity.notifySnackbarAdd(1);
 
+            } else {
+                Toast.makeText(NoteAddActivity.this, "Unable to Save !!", Toast.LENGTH_SHORT).show();
+                addNoteEtxTitle.setFocusable(true);
+                addNoteEtxTitle.setError("Try Again !");
+            }
 
-            MainActivity.notifySnackbarAdd(1);
+            dbManager.closeDataBase();
 
-
+            hideSoftKeyboard();
         } else {
-            Toast.makeText(NoteAddActivity.this, "Unable to Save !!", Toast.LENGTH_SHORT).show();
-            addNoteEtxTitle.setFocusable(true);
-            addNoteEtxTitle.setError("Try Again !");
+            MainActivity.notifySnackbarAdd(2);
+            finish();
         }
 
-        dbManager.closeDataBase();
-
-        hideSoftKeyboard();
-
-
     }
-
 
     @Override
     protected void onStop() {
@@ -333,5 +292,15 @@ public class NoteAddActivity extends AppCompatActivity {
             InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
             inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
         }
+    }
+
+    //-------------------------------------------------------------------------------------------------------------
+    @Override
+    public void onBackPressed() {
+        saveToDB();
+        ActivityCompat.finishAfterTransition(NoteAddActivity.this);
+        finish();
+
+
     }
 }

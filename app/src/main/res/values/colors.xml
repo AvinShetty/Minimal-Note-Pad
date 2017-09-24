@@ -31,9 +31,11 @@
     <color name="create_linear_edit_bottom">#607D8B</color>
 
     <color name="create_linear_default_bottom">#E91E63</color>
+    <color name="create_linear_default_bottom2">#ffffff</color>
 
     <!--date text-->
     <color name="create_date_default">#FFFFFF</color>
+    <color name="create_date_two">#24b629</color>
     <color name="create_date_edit">#8e8d83</color>
 
 
@@ -54,8 +56,12 @@
 
     <!--toolbar color-->
     <color name="update_note_toolbar_color">#09995d</color>
+    <color name="update_note_statusbar">#4CAF50</color>
 
     <color name="update_note_fab_color">#09995d</color>
+
+    <color name="toolbar_fav">#FFC107</color>
+    <color name="toolbar_fav_status">#FF6F00</color>
 
 
 </resources>

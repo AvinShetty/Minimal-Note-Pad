@@ -41,8 +41,8 @@
                 android:layout_below="@+id/update_note_etxTitle"
                 android:layout_marginTop="20dp"
                 android:hint="@string/content_update_content"
-                android:lines="5"
                 android:inputType="textMultiLine"
+                android:lines="5"
                 android:textSize="14sp" />
 
             <!--only visible when edit option taps-->
@@ -62,13 +62,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:layout_alignParentBottom="true"
-                android:background="@color/create_linear_default_bottom">
+                android:background="@color/create_linear_default_bottom2">
 
 
                 <TextView
                     android:id="@+id/update_note_dateTvTwo"
                     style="@style/MyDateText"
-                    android:textColor="@color/create_date_default" />
+                    android:textColor="@color/create_date_two" />
 
             </LinearLayout>
 

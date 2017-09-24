@@ -1,14 +1,11 @@
 package redfoxclassic.hehe.ui.activity;
 
-import android.app.SearchManager;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.speech.RecognizerIntent;
 import android.support.annotation.RequiresApi;
 import android.support.v4.BuildConfig;
 import android.support.v4.app.ActivityOptionsCompat;
@@ -20,15 +17,15 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
-import android.transition.Slide;
+import android.transition.Fade;
 import android.util.Log;
 import android.view.ContextMenu;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -116,20 +113,20 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        setupToolbar();
+
+       /* */
         ButterKnife.bind(this);
 
 
         if (BuildConfig.DEBUG) {          //by default returns false, but in production true :
             Log.e(TAG, "onCreate()");
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+       /* if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             setupWindowAnimations();
-        }
+        }*/
         setupFab();
 
-        setupToolbar();
 
         noteAdapter = new NoteAdapter(noteModelList, MainActivity.this);
         layoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
@@ -144,8 +141,6 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
-    //---------------------------------------------------------------------------------------------------------------
-
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
@@ -154,7 +149,6 @@ public class MainActivity extends AppCompatActivity {
         loadDataAll();
 
     }
-    //---------------------------------------------------------------------------------------------------------------
 
     @Override
     protected void onResume() {
@@ -162,20 +156,7 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         loadDataAll();
 
-        if (notifyValueAdd == 1) {
-            MySnackBarUtil.showSnackBar(MainActivity.this, MyConstants.SNACKBAR_ADD, "saved");
-            materialSheetFab.showFab();
-            notifyValueAdd = 0;
-        }
-        if (notifyValueUpdate == 1) {
-            MySnackBarUtil.showSnackBar(MainActivity.this, MyConstants.SNACKBAR_UPDATE, "update");
-            materialSheetFab.showFab();
-            notifyValueUpdate = 0;
-        }
-        if (notifyFavourite == 1) {
-            materialSheetFab.showFab();
-            notifyFavourite = 0;
-        }
+        onResumeOperation();
 
 
     }
@@ -215,6 +196,8 @@ public class MainActivity extends AppCompatActivity {
     //---------------------------------------------------------------------------------------------------------------
 
     void setupToolbar() {
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
         toolbar.setBackgroundColor(ContextCompat.getColor(this, R.color.theme_primary));
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -534,15 +517,17 @@ public class MainActivity extends AppCompatActivity {
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private void setupWindowAnimations() {
-        Slide slideExit = new Slide();
-        slideExit.setSlideEdge(Gravity.START);
-        slideExit.setDuration(800);
-        slideExit.excludeTarget(R.id.toolbar, true);
-/*
-        slideExit.excludeTarget(View.SYSTEM_UI_FLAG_LOW_PROFILE, true); //System Bar
+        /*Slide reEnter = new Slide();
+        reEnter.setSlideEdge(Gravity.END);
+        reEnter.setDuration(800);
+        reEnter.excludeTarget(android.R.id.navigationBarBackground, true);
+        reEnter.excludeTarget(android.R.id.statusBarBackground, true);
+        getWindow().setReenterTransition(reEnter);
 */
-        getWindow().setExitTransition(slideExit);
-        //  getWindow().setReenterTransition(slideExit);
+
+        Fade fade = new Fade();
+        fade.setDuration(800);
+        getWindow().setExitTransition(fade);
 
 
     }
@@ -569,6 +554,38 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 super.onBackPressed();
             }
+        }
+    }
+
+
+    private void onResumeOperation() {
+
+        if (notifyValueAdd == 1) {
+            Animation animation = AnimationUtils.loadAnimation(MainActivity.this, R.anim.slide_left2);
+            toolbar.setAnimation(animation);
+            MySnackBarUtil.showSnackBar(MainActivity.this, MyConstants.SNACKBAR_ADD, "saved");
+            materialSheetFab.showFab();
+            notifyValueAdd = 0;
+        }
+        if (notifyValueUpdate == 1) {
+            Animation animation = AnimationUtils.loadAnimation(MainActivity.this, R.anim.slide_left2);
+            toolbar.setAnimation(animation);
+            MySnackBarUtil.showSnackBar(MainActivity.this, MyConstants.SNACKBAR_UPDATE, "update");
+            materialSheetFab.showFab();
+            notifyValueUpdate = 0;
+        }
+        if (notifyFavourite == 1) {
+            materialSheetFab.showFab();
+            notifyFavourite = 0;
+        }
+        if (notifyValueAdd == 2) {
+            materialSheetFab.showFab();
+            Toast.makeText(this, "Empty note won't be saved", Toast.LENGTH_SHORT).show();
+            notifyValueAdd = 0;
+        }
+        if (notifyValueUpdate == 2) {
+            materialSheetFab.showFab();
+            notifyValueUpdate = 0;
         }
     }
 

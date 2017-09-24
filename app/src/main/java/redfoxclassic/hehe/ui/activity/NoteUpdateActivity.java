@@ -89,13 +89,11 @@ public class NoteUpdateActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_note_update);
         NoteUpdateActivity.this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+        setupToolbar();
         ButterKnife.bind(this);
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
 
         fabUpdate.getBackground().setColorFilter(ContextCompat.getColor(this, R.color.update_note_fab_color), PorterDuff.Mode.SRC_IN);
 
-        setupToolbar();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             setUpAnimations();
         }
@@ -153,10 +151,10 @@ public class NoteUpdateActivity extends AppCompatActivity {
         toolbar = (Toolbar) findViewById(R.id.update_note_toolbar);
         setSupportActionBar(toolbar);
 
-        toolbar.setBackgroundColor(ContextCompat.getColor(this, R.color.createToolBarBarPrimary));
+        toolbar.setBackgroundColor(ContextCompat.getColor(this, R.color.update_note_toolbar_color));
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 
-            getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.createStatusBarPrimary));
+            getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.update_note_statusbar));
         }
 
     }
@@ -189,7 +187,7 @@ public class NoteUpdateActivity extends AppCompatActivity {
         if (fabUpdate.isShown()) {
             updateToDB();
             ActivityCompat.finishAfterTransition(NoteUpdateActivity.this);
-            hideSoftKeyboard();
+            /*hideSoftKeyboard();*/
             finish();
 
         } else {
@@ -245,6 +243,7 @@ public class NoteUpdateActivity extends AppCompatActivity {
 
             hideSoftKeyboard();
         } else {
+            MainActivity.notifySnackbarUpdate(2);
             finish();
         }
 
@@ -281,8 +280,8 @@ public class NoteUpdateActivity extends AppCompatActivity {
 
             updateNoteEtxTitle.setText(rcvTitle);
             updateNoteEtxContent.setText(rcvContent);
-            updateNoteDateTv.setText("modified : " + rcvDate);
-            updateNoteDateTv2.setText("modified : " + rcvDate);
+            updateNoteDateTv.setText("modified : ".concat(rcvDate));
+            updateNoteDateTv2.setText("modified : ".concat(rcvDate));
         }
     }
 
@@ -290,10 +289,10 @@ public class NoteUpdateActivity extends AppCompatActivity {
     public void onViewClickedTextStyleFormat(View view) {
         switch (view.getId()) {
             case R.id.update_note_bold:
-                if (updateNoteEtxContent.hasFocus() == true) {
+                if (updateNoteEtxContent.hasFocus()) {
                     updateNoteEtxContent.setTypeface(null, Typeface.BOLD);
                 }
-                if (updateNoteEtxTitle.hasFocus() == true) {
+                if (updateNoteEtxTitle.hasFocus()) {
                     updateNoteEtxTitle.setTypeface(null, Typeface.BOLD);
                 }
 
@@ -301,10 +300,10 @@ public class NoteUpdateActivity extends AppCompatActivity {
                 break;
             case R.id.update_note_italic:
 
-                if (updateNoteEtxContent.hasFocus() == true) {
+                if (updateNoteEtxContent.hasFocus()) {
                     updateNoteEtxContent.setTypeface(null, Typeface.ITALIC);
                 }
-                if (updateNoteEtxTitle.hasFocus() == true) {
+                if (updateNoteEtxTitle.hasFocus()) {
                     updateNoteEtxTitle.setTypeface(null, Typeface.ITALIC);
                 }
 
@@ -317,12 +316,12 @@ public class NoteUpdateActivity extends AppCompatActivity {
     public void onViewClickedTextSizeFormat(View view) {
         switch (view.getId()) {
             case R.id.update_note_textPlus:
-                if (updateNoteEtxContent.hasFocus() == true) {
+                if (updateNoteEtxContent.hasFocus()) {
                     defaultTextSizeContent++;
                     updateNoteEtxContent.setTextSize(defaultTextSizeContent);
                 }
 
-                if (updateNoteEtxTitle.hasFocus() == true) {
+                if (updateNoteEtxTitle.hasFocus()) {
                     defaultTextSizeTitle++;
                     updateNoteEtxTitle.setTextSize(defaultTextSizeTitle);
 
@@ -330,11 +329,11 @@ public class NoteUpdateActivity extends AppCompatActivity {
 
                 break;
             case R.id.update_note_textMinus:
-                if (updateNoteEtxContent.hasFocus() == true) {
+                if (updateNoteEtxContent.hasFocus()) {
                     defaultTextSizeContent--;
                     updateNoteEtxContent.setTextSize(defaultTextSizeContent);
                 }
-                if (updateNoteEtxTitle.hasFocus() == true) {
+                if (updateNoteEtxTitle.hasFocus()) {
                     defaultTextSizeTitle--;
                     updateNoteEtxTitle.setTextSize(defaultTextSizeTitle);
 
@@ -399,8 +398,8 @@ public class NoteUpdateActivity extends AppCompatActivity {
 
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 
-                        getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.createStatusBarPrimary));
-                        toolbar.setBackgroundColor(ContextCompat.getColor(this, R.color.createToolBarBarPrimary));
+                        getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.update_note_statusbar));
+                        toolbar.setBackgroundColor(ContextCompat.getColor(this, R.color.update_note_toolbar_color));
                     }
 
                     defaultLayoutUpdate.setAnimation(slideUp);

@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context="redfoxclassic.hehe.ui.activity.NoteUpdateActivity">
+    tools:context="redfoxclassic.hehe.ui.activity.NoteUpdateActivity"
+    tools:showIn="@layout/activity_note_update">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
@@ -16,12 +17,12 @@
             android:id="@+id/update_note_toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
+            android:background="@color/update_note_toolbar_color"
             app:popupTheme="@style/AppTheme.PopupOverlay">
 
             <Button
                 android:id="@+id/update_note_title_btn"
-                style="@style/MyNoteTitle"
+                style="@style/MyNoteTitleUpdate"
                 android:layout_width="32dp"
                 android:layout_height="32dp" />
 
@@ -30,13 +31,13 @@
                 android:layout_height="wrap_content">
 
                 <ToggleButton
-                    android:visibility="gone"
                     android:id="@+id/update_note_toggle"
                     style="@style/MyNoteToggle"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:layout_marginEnd="20dp"
-                    android:layout_marginRight="20dp" />
+                    android:layout_marginRight="20dp"
+                    android:visibility="gone" />
             </RelativeLayout>
 
         </android.support.v7.widget.Toolbar>
