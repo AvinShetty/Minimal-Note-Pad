@@ -70,7 +70,7 @@ public class NoteUpdateActivity extends AppCompatActivity {
     @BindView(R.id.update_note_toggle)
     ToggleButton toggle;
     @BindView(R.id.update_note_fab)
-    FloatingActionButton fabUpdate;
+    FloatingActionButton fabUpdateBtn;
 
     private Toolbar toolbar;
 
@@ -78,10 +78,9 @@ public class NoteUpdateActivity extends AppCompatActivity {
     private float defaultTextSizeTitle = 16;
     private float defaultTextSizeContent = 14;
 
-    private String rcvTitle;
-    private String rcvContent;
     private int recordPos;
-    private String rcvDate;
+
+    private int fabValue = 0;
 
 
     @Override
@@ -92,7 +91,7 @@ public class NoteUpdateActivity extends AppCompatActivity {
         setupToolbar();
         ButterKnife.bind(this);
 
-        fabUpdate.getBackground().setColorFilter(ContextCompat.getColor(this, R.color.update_note_fab_color), PorterDuff.Mode.SRC_IN);
+        fabUpdateBtn.getBackground().setColorFilter(ContextCompat.getColor(this, R.color.update_note_fab_color), PorterDuff.Mode.SRC_IN);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             setUpAnimations();
@@ -124,13 +123,14 @@ public class NoteUpdateActivity extends AppCompatActivity {
 
 
         Animation slideRight = AnimationUtils.loadAnimation(NoteUpdateActivity.this, R.anim.slide_right);
-        fabUpdate.setAnimation(slideRight);
-        fabUpdate.setVisibility(View.GONE);
+        fabUpdateBtn.setAnimation(slideRight);
+        fabUpdateBtn.setVisibility(View.GONE);
 
 
         updateNoteEtxTitle.setEnabled(true);
         updateNoteEtxContent.setEnabled(true);
 
+        fabValue = 1;
         updateNoteEtxTitle.requestFocus();
       /*  editTextTouch();
         editTextTouch2();*/
@@ -181,71 +181,41 @@ public class NoteUpdateActivity extends AppCompatActivity {
     }
 
 
-    @Override
-    public void onBackPressed() {
-
-        if (fabUpdate.isShown()) {
-            updateToDB();
-            ActivityCompat.finishAfterTransition(NoteUpdateActivity.this);
-            /*hideSoftKeyboard();*/
-            finish();
-
-        } else {
-
-            toggle.setVisibility(View.GONE);
-
-            updateNoteEtxTitle.setEnabled(false);
-            updateNoteEtxContent.setEnabled(false);
-
-            Animation slideLeft = AnimationUtils.loadAnimation(NoteUpdateActivity.this, R.anim.slide_left);
-            fabUpdate.setVisibility(View.VISIBLE);
-            fabUpdate.setAnimation(slideLeft);
-
-        }
-
-    }
-
     private void updateToDB() {
         String title = updateNoteEtxTitle.getText().toString().trim();
         String content = updateNoteEtxContent.getText().toString().trim();
         String dateText = MyDate.formatDate(System.currentTimeMillis());
 
+        System.out.println(title);
+        System.out.println(content);
+        DBManager dbManager = DBManager.getInstance(NoteUpdateActivity.this);
 
-        if (title.length() != rcvTitle.length() || title.length() > 0 &&
-                content.length() != rcvContent.length() || content.length() > 0) {
+        dbManager.openDataBase();
 
-
-            DBManager dbManager = DBManager.getInstance(NoteUpdateActivity.this);
-
-            dbManager.openDataBase();
-
-            NoteModel noteModel = new NoteModel();
+        NoteModel noteModel = new NoteModel();
 
 
-            noteModel.setTitle(title);
-            noteModel.setContent(content);
-            noteModel.setDate(dateText);
-            noteModel.setId(recordPos);
+        noteModel.setTitle(title);
+        noteModel.setContent(content);
+        noteModel.setDate(dateText);
+        noteModel.setId(recordPos);
 
 
-            long rowsAffected = dbManager.updateNote(noteModel, recordPos);
+        long rowsAffected = dbManager.updateNote(noteModel, recordPos);
 
-            if (rowsAffected > 0) {
+        if (rowsAffected > 0) {
 
-                MainActivity.notifySnackbarUpdate(1);
+            MainActivity.notifySnackbarUpdate(1);
 
 
-            } else {
-                Toast.makeText(NoteUpdateActivity.this, "Unable to Update !!", Toast.LENGTH_SHORT).show();
-            }
-
-            dbManager.closeDataBase();
-
-            hideSoftKeyboard();
         } else {
-            MainActivity.notifySnackbarUpdate(2);
-            finish();
+            Toast.makeText(NoteUpdateActivity.this, "Unable to Update !!", Toast.LENGTH_SHORT).show();
         }
+
+        dbManager.closeDataBase();
+
+        hideSoftKeyboard();
+
 
     }
 
@@ -268,15 +238,14 @@ public class NoteUpdateActivity extends AppCompatActivity {
         Log.e(TAG, "onPause()");
     }
 
-
     private void rcvData(Intent intent) {
         Bundle bundle = intent.getExtras();
         if (bundle != null) {
 
-            rcvTitle = bundle.getString(MyConstants.WISH_TITLE);
-            rcvContent = bundle.getString(MyConstants.WISH_CONTENT);
+            String rcvTitle = bundle.getString(MyConstants.WISH_TITLE);
+            String rcvContent = bundle.getString(MyConstants.WISH_CONTENT);
             recordPos = bundle.getInt(MyConstants.WISH_POSITION);
-            rcvDate = bundle.getString(MyConstants.WISH_DATE);
+            String rcvDate = bundle.getString(MyConstants.WISH_DATE);
 
             updateNoteEtxTitle.setText(rcvTitle);
             updateNoteEtxContent.setText(rcvContent);
@@ -284,6 +253,7 @@ public class NoteUpdateActivity extends AppCompatActivity {
             updateNoteDateTv2.setText("modified : ".concat(rcvDate));
         }
     }
+
 
     @OnClick({R.id.update_note_bold, R.id.update_note_italic})
     public void onViewClickedTextStyleFormat(View view) {
@@ -352,7 +322,6 @@ public class NoteUpdateActivity extends AppCompatActivity {
 
 
     }
-//-------------------------------------------------------------------------------------------------------------
 
     @OnClick({R.id.update_note_title_btn, R.id.update_note_toggle})
     public void onViewClicked(View view) {
@@ -463,6 +432,31 @@ public class NoteUpdateActivity extends AppCompatActivity {
                 NoteUpdateActivity.this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
                 NoteUpdateActivity.this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
                 break;
+        }
+    }
+
+    //-------------------------------------------------------------------------------------------------------------
+    @Override
+    public void onBackPressed() {
+
+        if (fabValue == 1) {
+            toggle.setVisibility(View.GONE);
+
+            updateNoteEtxTitle.setEnabled(false);
+            updateNoteEtxContent.setEnabled(false);
+
+            Animation slideLeft = AnimationUtils.loadAnimation(NoteUpdateActivity.this, R.anim.slide_left);
+            fabUpdateBtn.setVisibility(View.VISIBLE);
+            fabUpdateBtn.setAnimation(slideLeft);
+
+            updateToDB();
+            fabValue = 0;
+
+
+        } else {
+            ActivityCompat.finishAfterTransition(NoteUpdateActivity.this);
+            super.onBackPressed();
+
         }
     }
 

@@ -12,11 +12,20 @@
         android:id="@+id/main_rv"
         style="@style/MyRecyclerViewStyle" />
 
-    <ImageView
-        android:id="@+id/activity_main_imvEmpty"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
+
+    <TextView
+        android:id="@+id/emptyMsg_main"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
         android:layout_centerInParent="true"
-        android:src="@mipmap/ic_launcher" />
+        android:layout_marginTop="5dp"
+        android:drawableLeft="@drawable/ic_msg_logo"
+        android:drawablePadding="5dp"
+        android:gravity="center"
+        android:text="     Start with small,\nMake it Done\nTap + to add.."
+        android:textColor="@color/create_linear_edit_bottom"
+        android:textSize="14sp"
+        android:visibility="gone" />
 
 </RelativeLayout>

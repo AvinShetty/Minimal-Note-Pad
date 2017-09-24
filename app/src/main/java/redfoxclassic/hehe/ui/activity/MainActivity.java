@@ -3,9 +3,11 @@ package redfoxclassic.hehe.ui.activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.PorterDuff;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.Settings;
 import android.support.annotation.RequiresApi;
 import android.support.v4.BuildConfig;
 import android.support.v4.app.ActivityOptionsCompat;
@@ -27,7 +29,6 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -67,8 +68,8 @@ public class MainActivity extends AppCompatActivity {
     TextView fabSheetCreate;
     @BindView(R.id.main_cardView)
     CardView mainCardView;
-    @BindView(R.id.activity_main_imvEmpty)
-    ImageView imvEmpty;
+    @BindView(R.id.emptyMsg_main)
+    TextView emptyMessage;
 
 
     private int statusBarColor;
@@ -141,6 +142,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
+
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
@@ -203,6 +205,10 @@ public class MainActivity extends AppCompatActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 
             getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.theme_primary_dark2));
+        }
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setIcon(ContextCompat.getDrawable(this, R.mipmap.ic_launcher));
+            getSupportActionBar().setTitle("  MINI-PAD");
         }
     }
 
@@ -345,7 +351,6 @@ public class MainActivity extends AppCompatActivity {
                 layoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
                 recyclerView.setLayoutManager(layoutManager);
                 getSearchQuery(newText);
-                //onActivityResult(1,1,newText);
                 return false;
             }
         });
@@ -358,15 +363,18 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.action_settings) {
-            Toast.makeText(this, "NOT YET IMPLEMENTED", Toast.LENGTH_SHORT).show();
-            return true;
+        switch (id) {
+            case R.id.action_settings:
+                startActivity(new Intent(Settings.ACTION_SETTINGS));
+                break;
+            case R.id.action_about:
+                about();
+                break;
+            default:
         }
 
         return super.onOptionsItemSelected(item);
     }
-    //---------------------------------------------------------------------------------------------------------------
-
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
@@ -502,11 +510,11 @@ public class MainActivity extends AppCompatActivity {
         if (noteModelList.size() == 0) {
 
             recyclerView.setVisibility(View.GONE);
-            imvEmpty.setVisibility(View.VISIBLE);
+            emptyMessage.setVisibility(View.VISIBLE);
 
         } else {
             recyclerView.setVisibility(View.VISIBLE);
-            imvEmpty.setVisibility(View.GONE);
+            emptyMessage.setVisibility(View.GONE);
             noteAdapter = new NoteAdapter(noteModelList, MainActivity.this);
             recyclerView.setAdapter(noteAdapter);
             noteAdapter.notifyDataSetChanged();
@@ -589,4 +597,30 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void about() {
+        AlertDialog.Builder adb = new AlertDialog.Builder(MainActivity.this);
+        adb.setTitle("Minimalistic Note Pad");
+        adb.setMessage("Credits goes to :\n" +
+                "- MaterialSheetFab \n" +
+                "- MaterialSearchView \n" +
+                "- FlatUI-icons \n" +
+                "\n");
+        adb.setPositiveButton("GOT IT", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        adb.setNeutralButton("GITHUB Repo", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Uri uri = Uri.parse("https://github.com/Hemen07/Minimal-Note-Pad");
+                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                startActivity(intent);
+            }
+        });
+        AlertDialog ad = adb.create();
+        ad.show();
+
+    }
 }

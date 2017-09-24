@@ -8,6 +8,12 @@
         android:title="@string/action_settings"
         app:showAsAction="never" />
 
+    <item
+        android:id="@+id/action_about"
+        android:orderInCategory="300"
+        android:title="@string/menu_main_about"
+        app:showAsAction="never" />
+
 
     <item
         android:id="@+id/action_search"

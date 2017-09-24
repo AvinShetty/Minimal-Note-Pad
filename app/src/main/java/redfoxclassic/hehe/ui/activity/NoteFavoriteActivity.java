@@ -21,7 +21,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.ImageView;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,10 +40,10 @@ public class NoteFavoriteActivity extends AppCompatActivity {
 
     @BindView(R.id.fav_main_rv)
     RecyclerView recyclerView;
-    @BindView(R.id.activity_note_imvEmpty)
-    ImageView activityNoteImvEmpty;
     @BindView(R.id.fab_note_fab)
     FloatingActionButton fabNoteFab;
+    @BindView(R.id.emptyMsg)
+    TextView emptyMessage;
     private Toolbar toolbar;
 
     private NoteAdapter noteAdapter;
@@ -134,11 +134,11 @@ public class NoteFavoriteActivity extends AppCompatActivity {
         if (noteModelList.size() == 0) {
 
             recyclerView.setVisibility(View.GONE);
-            activityNoteImvEmpty.setVisibility(View.VISIBLE);
+            emptyMessage.setVisibility(View.VISIBLE);
 
         } else {
             recyclerView.setVisibility(View.VISIBLE);
-            activityNoteImvEmpty.setVisibility(View.GONE);
+            emptyMessage.setVisibility(View.GONE);
             noteAdapter = new NoteAdapter(noteModelList, NoteFavoriteActivity.this);
             recyclerView.setAdapter(noteAdapter);
             noteAdapter.notifyDataSetChanged();
